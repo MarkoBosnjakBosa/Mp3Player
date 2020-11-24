@@ -12,7 +12,7 @@ const databaseUrl = process.env.DATABASE_URL;
 app.use(cors({origin: "*"}));
 app.use(express.json());
 
-const music = require("./routes/music.js")(app, models, multer, fs);
+const songs = require("./routes/songs.js")(app, models, multer, fs);
 
 mongoose.connect(databaseUrl, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
 const database = mongoose.connection;
