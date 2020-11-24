@@ -1,4 +1,4 @@
-module.exports = function(app, models, multer, fs) {
+module.exports = function(app, models, multer, fs, path) {
     const Song = models.Song;
 	var storage = multer.diskStorage({
 		destination: function (request, file, callback) {
@@ -85,6 +85,7 @@ module.exports = function(app, models, multer, fs) {
             var query = {_id: songId};
             Song.findOneAndRemove(query).then(song => {
                 if(!isEmpty(song)) {
+					fs.unlink(path.join(__dirname, "../songs/", song.path), function(error) {});
                     response.status(200).json({deleted: true});
                     response.end();
                 } else {
