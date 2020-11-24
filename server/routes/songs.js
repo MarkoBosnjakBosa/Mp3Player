@@ -58,6 +58,45 @@ module.exports = function(app, models, multer, fs) {
 			response.end();
 		}
     });
+    app.put("/editSong", (request, response) => {
+        var songId = request.body.songId;
+        var title = request.body.title;
+        var author = request.body.icon;
+        if(songId && title && author) {
+            var query = {_id: songId};
+            var update = {title: title, author: author};
+            Song.findOneAndUpdate(query, update, {new: true}).then(song => {
+                if(!isEmpty(song)) {
+                    response.status(200).json({edited: true});
+                    response.end();
+                } else {
+                    response.status(200).json({edited: false});
+                    response.end();
+                }
+            }).catch(error => console.log(error));
+        } else {
+            response.status(200).json({edited: false});
+            response.end();
+        }
+    });
+    app.delete("/deleteSong/:songId", (request, response) => {
+        var songId = request.params.songId;
+        if(songId) {
+            var query = {_id: songId};
+            Song.findOneAndRemove(query).then(song => {
+                if(!isEmpty(song)) {
+                    response.status(200).json({deleted: true});
+                    response.end();
+                } else {
+                    response.status(200).json({deleted: false});
+                    response.end();
+                }
+            }).catch(error => console.log(error));
+        } else {
+            response.status(200).json({deleted: false});
+            response.end();
+        }
+    });
     
     function getSongScheme(Song, title, author, path) {
 		return new Song({title: title, author: author, path: path});
