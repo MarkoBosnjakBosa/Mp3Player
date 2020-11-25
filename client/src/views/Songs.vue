@@ -9,8 +9,8 @@
 <script>
 	import "bootstrap";
 	import "bootstrap/dist/css/bootstrap.min.css";
-	import SongsTable from "@/components/SongsTable.vue";
-	import SongsForm from "@/components/SongsForm.vue";
+	import SongsTable from "../components/SongsTable.vue";
+	import SongsForm from "../components/SongsForm.vue";
     var axios = require("axios");
     
 	export default {
