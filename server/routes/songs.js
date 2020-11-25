@@ -11,14 +11,13 @@ module.exports = function(app, models, multer, fs, path) {
 	var upload = multer({
 		storage: storage,
 		fileFilter: function (request, file, callback) {
-			if(file.mimetype === "audio/mp3") {
+			if(file.mimetype === "audio/mpeg") {
 				callback(null, true);
 			} else {
 				request.extensionValidationError = true;
 				return callback(null, false, request.extensionValidationError);
 			}
-		},
-		limits: {fileSize: 500000}
+		}
     });
     app.post("/uploadSong", upload.single("song"), (request, response) => {
 		var allowUpload = true;
@@ -101,5 +100,8 @@ module.exports = function(app, models, multer, fs, path) {
     
     function getSongScheme(Song, title, author, path) {
 		return new Song({title: title, author: author, path: path});
+	}
+	function isEmpty(object) {
+		return !object || Object.keys(object).length === 0;
 	}
 }

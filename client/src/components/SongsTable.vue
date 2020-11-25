@@ -3,10 +3,8 @@
 		<table class="table">
 			<thead>
 				<th scope="col">#</th>
-				<th scope="col">Person</th>
-				<th scope="col">Description</th>
-				<th scope="col">Due Date</th>
-				<th scope="col">Priority</th>
+				<th scope="col">Title</th>
+				<th scope="col">Author</th>
 				<th scope="col">Actions</th>
 				<th scope="col">
 					<select id="filter" class="form-control" v-model="filter">
@@ -20,48 +18,6 @@
 					</select>
 				</th>
 			</thead>
-			<tbody>
-				<tr v-if="!filterByTerm.length">
-					<td colspan="6" class="noTasks">No songs found!</td>
-				</tr>
-				<tr v-for="(task, index) in filterByTerm" :key="task._id">
-					<th scope="row">{{++index}}</th>
-					<td v-if="editing == task._id"><input type="text" class="form-control" v-model="task.person"/></td>
-					<td v-else>{{task.person}}</td>
-					<td v-if="editing == task._id"><input type="text" class="form-control" v-model="task.description"/></td>
-					<td v-else>{{task.description}}</td>
-					<td v-if="editing == task._id" class="padded">{{task.dueDate}}</td>
-					<td v-else>{{task.dueDate}}</td>
-					<td v-if="editing == task._id">
-					<select id="priority" class="form-control" v-model="task.priority">
-						<option value="top">Top</option>
-						<option value="medium">Medium</option>
-						<option value="low">Low</option>
-					</select>
-					</td>
-					<td v-else style="text-transform: capitalize">{{task.priority}}</td>
-					<td v-if="editing == task._id" class="padded">
-						<i class="far fa-check-circle" @click="editTask(task)"></i>
-						<i class="far fa-times-circle" @click="disableEditing(task)"></i>
-					</td>
-					<td v-else>
-						<i class="fas fa-pencil-alt" @click="enableEditing(task)"></i>
-						<i class="fas fa-trash" @click="deleteTask(task._id)"></i>
-						<i v-if="checkTaskDate(task.dueDate)" class="fas fa-check" :class="{'resolvedTask': isTaskResolved(task.resolved)}" @click="resolveTask(task._id)"></i>
-						<i v-if="checkTaskDate(task.dueDate)" class="fas fa-times" :class="{'declinedTask': isTaskDeclined(task.resolved)}" @click="declineTask(task._id)"></i>
-					</td>
-					<td v-if="editing == task._id" class="padded">
-						<i v-if="checkTaskDate(task.dueDate)" class="far fa-clock"></i>
-						<i v-if="!checkTaskDate(task.dueDate) && isTaskResolved(task.resolved)" class="fas fa-check resolvedTask"></i>
-						<i v-if="!checkTaskDate(task.dueDate) && isTaskDeclined(task.resolved)" class="fas fa-times declinedTask"></i>
-					</td>
-					<td v-else class="dueDateExpired">
-						<i v-if="checkTaskDate(task.dueDate)" class="far fa-clock"></i>
-						<i v-if="!checkTaskDate(task.dueDate) && isTaskResolved(task.resolved)" class="fas fa-check resolvedTask"></i>
-						<i v-if="!checkTaskDate(task.dueDate) && isTaskDeclined(task.resolved)" class="fas fa-times declinedTask"></i>
-					</td>
-				</tr>
-			</tbody>
 		</table>
 	</div>
 </template>

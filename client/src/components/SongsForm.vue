@@ -11,7 +11,8 @@
 					<small v-if="(authorError && submitting) || (!returnedData.created && returnedData.errorFields.includes('author'))" class="form-text errorInput">Please provide a valid author!</small>
 				</div>
                 <div class="form-group col-md-4">
-					<input type="file" id="file" class="form-control" :class="{'errorField' : fileError && submitting}" @focus="clearFileStatus()" @keypress="clearFileStatus()"/>
+					<input type="file" id="file" class="inputFile" @change="selectFile($event)"/>
+					<label for="file"><i class="fas fa-music"></i><span id="fileName">Choose a song</span></label>
 					<small v-if="(fileError && submitting) || (!returnedData.created && returnedData.errorFields.includes('file'))" class="form-text errorInput">Please provide a valid file!</small>
 				</div>
 			</div>
@@ -66,16 +67,35 @@
 					this.$emit("resetdata");
 					return;
 				}
-				this.$emit("createsong", this.song);
+				console.log(this.song);
+				/*this.$emit("createsong", this.song);
 				this.$refs.first.focus();
 				this.song = {title: "", author: "", file: ""};
-				this.titleError = false, this.authorError = false, this.fileError = false, this.submitting = false;
+				document.getElementById("file").value = "";
+				document.getElementById("fileName").textContent = "Choose a song";
+				this.titleError = false, this.authorError = false, this.fileError = false, this.submitting = false;*/
 			},
 			clearTitleStatus() { this.titleError = false; },
 			clearAuthorStatus() { this.authorError = false; },
 			clearFileStatus() { this.fileError = false; },
+			selectFile(event) {
+				var files = event.target.files;
+				var allowedExtensions = ["audio/mpeg"];
+				if(files && files.length && allowedExtensions.includes(files[0].type)) {
+					var file = files[0];
+					var reader = new FileReader();
+					this.song.file = file;
+					document.getElementById("fileName").textContent = file.name;
+					this.clearFileStatus();
+					reader.readAsDataURL(file);
+				} else {
+					this.fileError = true;
+				}
+			},
 			resetForm() {
 				this.song = {title: "", author: "", file: ""};
+				document.getElementById("file").value = "";
+				document.getElementById("fileName").textContent = "Choose a song";
 				this.titleError = false, this.authorError = false, this.fileError = false, this.submitting = false;
 				this.$emit("resetdata");
 			}
@@ -93,6 +113,43 @@
 		max-width: 800px;
 		margin: 0 auto;
 		margin-bottom: 20px;
+	}
+	.inputFile {
+		width: 0.1px;
+		height: 0.1px;
+		opacity: 0;
+		overflow: hidden;
+		position: absolute;
+		z-index: -1;
+	}
+	.inputFile + label{
+		width: 100%;
+		font-weight: 700;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		cursor: pointer;
+		display: inline-block;
+		overflow: hidden;
+		padding: 5px;
+		color: #808080;
+		border: 2px solid #808080;
+		border-radius: 5px;
+	}
+	.inputFile:focus + label, .inputFile.has-focus + label, .inputFile + label:hover {
+		outline: 1px dotted #000;
+		outline: -webkit-focus-ring-color auto 5px;
+		color: #000;
+	}
+	.inputFile + .fas.fa-music {
+		width: 1em;
+		height: 1em;
+		vertical-align: middle;
+		fill: currentColor;
+		margin-top: -0.25em;
+		margin-right: 0.25em;
+	}
+	#fileName {
+		margin-left: 5px;
 	}
 	.resetForm {
 		margin-left: 10px;
