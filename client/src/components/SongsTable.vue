@@ -137,9 +137,6 @@
 	.fa-times-circle, .declinedTask {
 		color: #ff0000;
 	}
-	.dueDateExpired .resolvedTask, .dueDateExpired .declinedTask {
-		cursor: default;
-	}
 	.noTasks {
 		font-weight: bold;
 		text-align: center;
