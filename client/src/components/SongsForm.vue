@@ -133,7 +133,7 @@
 		padding: 5px;
 		color: #808080;
 		border: 2px solid #808080;
-		border-radius: 5px;
+		border-radius: .25rem;
 	}
 	.inputFile:focus + label, .inputFile.has-focus + label, .inputFile + label:hover {
 		outline: 1px dotted #000;
