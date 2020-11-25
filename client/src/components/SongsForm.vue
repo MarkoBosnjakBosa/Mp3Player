@@ -1,16 +1,20 @@
 <template>
 	<div id="songsForm">
-		<form autocomplete="off" @submit.prevent="uploadSong()">
+		<form autocomplete="off" @submit.prevent="uploadSong()" enctype="multipart/form-data">
 			<div class="form-row">
-				<div class="form-group col-md-4">
-					<input type="text" id="title" class="form-control" :class="{'errorField' : titleError && submitting}" placeholder="Title" v-model="song.title" ref="first" @focus="clearTitleStatus()" @keypress="clearTitleStatus()"/>
-					<small v-if="(titleError && submitting) || (!returnedData.created && returnedData.errorFields.includes('title'))" class="form-text errorInput">Please provide a valid title!</small>
-				</div>
-				<div class="form-group col-md-4">
-					<input type="text" id="author" class="form-control" :class="{'errorField' : authorError && submitting}" placeholder="Author" v-model="song.author" @focus="clearAuthorStatus()" @keypress="clearAuthorStatus()"/>
+				<div class="form-group col-md-6">
+					<select id="author" class="form-control" :class="{'errorField' : authorError && submitting}" v-model="song.author" @focus="clearAuthorStatus()" @keypress="clearAuthorStatus()">
+						<option value="" disabled selected>Select author...</option>
+						<option value="bonJovi">Bon Jovi</option>
+						<option value="linkinPark">Linkin Park</option>
+						<option value="acdc">ACDC</option>
+						<option value="kiss">Kiss</option>
+						<option value="duranDuran">Duran Duran</option>
+						<option value="other">Other</option>
+					</select>
 					<small v-if="(authorError && submitting) || (!returnedData.created && returnedData.errorFields.includes('author'))" class="form-text errorInput">Please provide a valid author!</small>
 				</div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-6">
 					<input type="file" id="file" class="inputFile" @change="selectFile($event)"/>
 					<label for="file"><i class="fas fa-music"></i><span id="fileName">Choose a song</span></label>
 					<small v-if="(fileError && submitting) || (!returnedData.created && returnedData.errorFields.includes('file'))" class="form-text errorInput">Please provide a valid file!</small>
@@ -31,11 +35,9 @@
 		data() {
 			return {
 				submitting: false,
-				titleError: false,
 				authorError: false,
 				fileError: false,
 				song: {
-					title: "",
 					author: "",
 					file: ""
 				}
@@ -47,14 +49,9 @@
 		methods: {
 			uploadSong() {
 				this.submitting = true;
-				this.clearTitleStatus();
 				this.clearAuthorStatus();
 				this.clearFileStatus();
 				var allowUpload = true;
-				if(this.invalidTitle) {
-					this.titleError = true;
-					allowUpload = false;
-				}
 				if(this.invalidAuthor) {
 					this.authorError = true;
 					allowUpload = false;
@@ -67,15 +64,15 @@
 					this.$emit("resetdata");
 					return;
 				}
-				console.log(this.song);
-				/*this.$emit("createsong", this.song);
-				this.$refs.first.focus();
-				this.song = {title: "", author: "", file: ""};
+				var formData = new FormData();
+				formData.append("author", this.song.author);
+				formData.append("file", this.song.file);
+				this.$emit("uploadsong", formData);
+				this.song = {author: "", file: ""};
 				document.getElementById("file").value = "";
 				document.getElementById("fileName").textContent = "Choose a song";
-				this.titleError = false, this.authorError = false, this.fileError = false, this.submitting = false;*/
+				this.authorError = false, this.fileError = false, this.submitting = false;
 			},
-			clearTitleStatus() { this.titleError = false; },
 			clearAuthorStatus() { this.authorError = false; },
 			clearFileStatus() { this.fileError = false; },
 			selectFile(event) {
@@ -93,15 +90,14 @@
 				}
 			},
 			resetForm() {
-				this.song = {title: "", author: "", file: ""};
+				this.song = {author: "", file: ""};
 				document.getElementById("file").value = "";
 				document.getElementById("fileName").textContent = "Choose a song";
-				this.titleError = false, this.authorError = false, this.fileError = false, this.submitting = false;
+				this.authorError = false, this.fileError = false, this.submitting = false;
 				this.$emit("resetdata");
 			}
 		},
 		computed: {
-			invalidTitle() { return this.song.title === ""; },
             invalidAuthor() { return this.song.author === ""; },
             invalidFile() { return this.song.file === ""; }
 		},

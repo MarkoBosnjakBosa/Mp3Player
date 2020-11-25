@@ -8,16 +8,45 @@
 				<th scope="col">Actions</th>
 				<th scope="col">
 					<select id="filter" class="form-control" v-model="filter">
-						<option value="all" selected>All</option>
-						<option value="resolved">Resolved</option>
-						<option value="declined">Declined</option>
-						<option value="processing">In process</option>
-						<option value="top">Top priority</option>
-						<option value="medium">Medium priority</option>
-						<option value="low">Low priority</option>
+						<option value="all">All</option>
+						<option value="bonJovi">Bon Jovi</option>
+						<option value="linkinPark">Linkin Park</option>
+						<option value="acdc">ACDC</option>
+						<option value="kiss">Kiss</option>
+						<option value="duranDuran">Duran Duran</option>
+						<option value="other">Other</option>
 					</select>
 				</th>
 			</thead>
+			<tbody>
+				<tr v-if="!filterByBand.length">
+					<td colspan="6" class="noSongs">No songs found!</td>
+				</tr>
+				<tr v-for="(song, index) in filterByBand" :key="song._id">
+					<th scope="row">{{++index}}</th>
+					<td v-if="editing == song._id"><input type="text" class="form-control" v-model="song.title"/></td>
+					<td v-else>{{song.title}}</td>
+					<td v-if="editing == song._id">
+					<select class="form-control" v-model="song.author">
+						<option value="bonJovi">Bon Jovi</option>
+						<option value="linkinPark">Linkin Park</option>
+						<option value="acdc">ACDC</option>
+						<option value="kiss">Kiss</option>
+						<option value="duranDuran">Duran Duran</option>
+						<option value="other">Other</option>
+					</select>
+					</td>
+					<td v-else style="text-transform: capitalize">{{song.author}}</td>
+					<td v-if="editing == song._id" class="padded">
+						<i class="far fa-check-circle" @click="editSong(song)"></i>
+						<i class="far fa-times-circle" @click="disableEditing(song)"></i>
+					</td>
+					<td v-else>
+						<i class="fas fa-pencil-alt" @click="enableEditing(song)"></i>
+						<i class="fas fa-trash" @click="deleteSong(song._id)"></i>
+					</td>
+				</tr>
+			</tbody>
 		</table>
 	</div>
 </template>
@@ -54,21 +83,21 @@
 			deleteSong(songId) { this.$emit("deletesong", songId); },
 		},
 		computed: {
-			filterByTerm() {
-				if(this.filter == "resolved") {
-					return this.tasks.filter(task => task.resolved == "yes");
-				} else if(this.filter == "declined") {
-					return this.tasks.filter(task => task.resolved == "no");
-				} else if(this.filter == "processing") {
-					return this.tasks.filter(task => task.resolved == "processing");
-				} else if(this.filter == "top") {
-					return this.tasks.filter(task => task.priority == "top");
-				} else if(this.filter == "medium") {
-					return this.tasks.filter(task => task.priority == "medium");
-				} else if(this.filter == "low") {
-					return this.tasks.filter(task => task.priority == "low");
+			filterByBand() {
+				if(this.filter == "bonJovi") {
+					return this.songs.filter(song => song.author == "bonJovi");
+				} else if(this.filter == "linkinPark") {
+					return this.songs.filter(song => song.author == "linkinPark");
+				} else if(this.filter == "acdc") {
+					return this.songs.filter(song => song.author == "acdc");
+				} else if(this.filter == "kiss") {
+					return this.songs.filter(song => song.author == "kiss");
+				} else if(this.filter == "duranDuran") {
+					return this.songs.filter(song => song.author == "duranDuran");
+				} else if(this.filter == "other") {
+					return this.songs.filter(song => song.author == "other");
 				} else {
-					return this.tasks;
+					return this.songs;
 				}
 			}
 		}
@@ -93,7 +122,7 @@
 	.fa-times-circle, .declinedTask {
 		color: #ff0000;
 	}
-	.noTasks {
+	.noSongs {
 		font-weight: bold;
 		text-align: center;
 		margin-top: 20px;

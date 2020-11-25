@@ -31,12 +31,11 @@
         methods: {
             getSongs() {
                 axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getSongs").then(response => {
-                    this.songs = response.data;
+                    this.songs = response.data.songs;
                 }).catch(error => console.log(error));
             },
-            uploadSong(song) {
-                var body = {title: song.title, author: song.author};
-                axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/uploadSong", body).then(response => {
+            uploadSong(formData) {
+                axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/uploadSong", formData).then(response => {
                     var returnedData = {};
                     if(response.data.uploaded) {
                         var newSong = response.data.song;
@@ -70,7 +69,7 @@
             }
         },
         created() {
-            //this.getSongs();
+            this.getSongs();
         }
     }
 </script>

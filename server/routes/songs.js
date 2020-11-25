@@ -1,11 +1,20 @@
 module.exports = function(app, models, multer, fs, path) {
-    const Song = models.Song;
+	const Song = models.Song;
+	app.get("/getSongs", (request, response) => {
+		var query = {};
+        Song.find(query).then(songs => {
+			response.status(200).json({songs: songs});
+			response.end();
+		}).catch(error => console.log(error));
+	});
 	var storage = multer.diskStorage({
 		destination: function (request, file, callback) {
 			callback(null, "songs/");
 		},
 		filename: function (request, file, callback) {
-			callback(null, file.originalname);
+			var fileArray = file.originalname.split(".");
+			var fileName = fileArray[0] + "_" + Date.now() + "." + fileArray[1];
+			callback(null, fileName);
 		},
 	});
 	var upload = multer({
@@ -19,38 +28,27 @@ module.exports = function(app, models, multer, fs, path) {
 			}
 		}
     });
-    app.post("/uploadSong", upload.single("song"), (request, response) => {
+    app.post("/uploadSong", upload.single("file"), (request, response) => {
 		var allowUpload = true;
 		var errorFields = [];
-		var title = request.body.title;
-		if(!title) {
-			errorFields.push("title");
-			allowUpload = false;
-		}
 		var author = request.body.author;
 		if(!author) {
 			errorFields.push("author");
 			allowUpload = false;
 		}
-		var song = request.file;
-		if(!song && request.extensionValidationError) {
-			errorFields.push("song");
+		var file = request.file;
+		if(!file && request.extensionValidationError) {
+			errorFields.push("file");
 			allowUpload = false;
 		}
 		if(allowUpload) {
-			var query = {name: name};
-			Song.findOne(query).then(song => {
-				if(!isEmpty(song)) {
-					var error = {uploaded: false, alreadyExists: true, field: "title"};
-                    response.status(200).json(error);
-                    response.end();
-				} else {
-					var newSong = getSongScheme(Song, title, author, path);
-                    newSong.save().then(user => {
-                        response.status(200).json({uploaded: true});
-                        response.end();
-                    }).catch(error => console.log(error));
-				}
+			var title = file.originalname;
+			var fileName = file.filename;
+			var path = "../../../server/songs/" + file.originalname;
+			var newSong = getSongScheme(Song, title, author, fileName, path);
+			newSong.save().then(song => {
+				response.status(200).json({uploaded: true, song: song});
+				response.end();
 			}).catch(error => console.log(error));
 		} else {
 			response.status(200).json({uploaded: false, alreadyExists: false, errorFields: errorFields});
@@ -98,8 +96,8 @@ module.exports = function(app, models, multer, fs, path) {
         }
     });
     
-    function getSongScheme(Song, title, author, path) {
-		return new Song({title: title, author: author, path: path});
+    function getSongScheme(Song, title, author, fileName, path) {
+		return new Song({title: title, author: author, fileName: fileName, path: path});
 	}
 	function isEmpty(object) {
 		return !object || Object.keys(object).length === 0;
