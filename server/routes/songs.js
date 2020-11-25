@@ -42,19 +42,19 @@ module.exports = function(app, models, multer, fs, path) {
 			var query = {name: name};
 			Song.findOne(query).then(song => {
 				if(!isEmpty(song)) {
-					var error = {created: false, alreadyExists: true, field: "title"};
+					var error = {uploaded: false, alreadyExists: true, field: "title"};
                     response.status(200).json(error);
                     response.end();
 				} else {
 					var newSong = getSongScheme(Song, title, author, path);
                     newSong.save().then(user => {
-                        response.status(200).json({created: true});
+                        response.status(200).json({uploaded: true});
                         response.end();
                     }).catch(error => console.log(error));
 				}
 			}).catch(error => console.log(error));
 		} else {
-			response.status(200).json({created: false, alreadyExists: false, errorFields: errorFields});
+			response.status(200).json({uploaded: false, alreadyExists: false, errorFields: errorFields});
 			response.end();
 		}
     });
