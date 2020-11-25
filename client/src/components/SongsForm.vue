@@ -5,11 +5,11 @@
 				<div class="form-group col-md-6">
 					<select id="author" class="form-control" :class="{'errorField' : authorError && submitting}" v-model="song.author" @focus="clearAuthorStatus()" @keypress="clearAuthorStatus()">
 						<option value="" disabled selected>Select author...</option>
-						<option value="bonJovi">Bon Jovi</option>
-						<option value="linkinPark">Linkin Park</option>
-						<option value="acdc">ACDC</option>
-						<option value="kiss">Kiss</option>
-						<option value="duranDuran">Duran Duran</option>
+						<option value="Bon Jovi">Bon Jovi</option>
+						<option value="Linkin Park">Linkin Park</option>
+						<option value="ACDC">ACDC</option>
+						<option value="Kiss">Kiss</option>
+						<option value="Duran Duran">Duran Duran</option>
 						<option value="other">Other</option>
 					</select>
 					<small v-if="(authorError && submitting) || (!returnedData.created && returnedData.errorFields.includes('author'))" class="form-text errorInput">Please provide a valid author!</small>

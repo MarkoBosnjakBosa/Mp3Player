@@ -28,11 +28,11 @@
 					<td v-else>{{song.title}}</td>
 					<td v-if="editing == song._id">
 					<select class="form-control" v-model="song.author">
-						<option value="bonJovi">Bon Jovi</option>
-						<option value="linkinPark">Linkin Park</option>
-						<option value="acdc">ACDC</option>
-						<option value="kiss">Kiss</option>
-						<option value="duranDuran">Duran Duran</option>
+						<option value="Bon Jovi">Bon Jovi</option>
+						<option value="Linkin Park">Linkin Park</option>
+						<option value="ACDC">ACDC</option>
+						<option value="Kiss">Kiss</option>
+						<option value="Duran Duran">Duran Duran</option>
 						<option value="other">Other</option>
 					</select>
 					</td>
@@ -84,16 +84,16 @@
 		},
 		computed: {
 			filterByBand() {
-				if(this.filter == "bonJovi") {
-					return this.songs.filter(song => song.author == "bonJovi");
-				} else if(this.filter == "linkinPark") {
-					return this.songs.filter(song => song.author == "linkinPark");
-				} else if(this.filter == "acdc") {
-					return this.songs.filter(song => song.author == "acdc");
-				} else if(this.filter == "kiss") {
-					return this.songs.filter(song => song.author == "kiss");
-				} else if(this.filter == "duranDuran") {
-					return this.songs.filter(song => song.author == "duranDuran");
+				if(this.filter == "Bon Jovi") {
+					return this.songs.filter(song => song.author == "Bon Jovi");
+				} else if(this.filter == "Linkin Park") {
+					return this.songs.filter(song => song.author == "Linkin Park");
+				} else if(this.filter == "ACDC") {
+					return this.songs.filter(song => song.author == "ACDC");
+				} else if(this.filter == "Kiss") {
+					return this.songs.filter(song => song.author == "Kiss");
+				} else if(this.filter == "Duran Duran") {
+					return this.songs.filter(song => song.author == "Duran Duran");
 				} else if(this.filter == "other") {
 					return this.songs.filter(song => song.author == "other");
 				} else {

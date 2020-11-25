@@ -1,4 +1,4 @@
 node_modules/
 .env
-server/songs/*
-!server/songs/.gitkeep
+client/src/assets/songs/*
+!client/src/assets/songs/.gitkeep

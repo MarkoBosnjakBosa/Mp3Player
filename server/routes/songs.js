@@ -9,7 +9,15 @@ module.exports = function(app, models, multer, fs, path) {
 	});
 	var storage = multer.diskStorage({
 		destination: function (request, file, callback) {
-			callback(null, "songs/");
+			var author = request.body.author;
+			var path = "../client/src/assets/songs/" + author;
+			var existingFolder = null;
+			try {
+				existingFolder = fs.statSync(path);
+			} catch(error) {
+				fs.mkdirSync(path);
+			}
+			callback(null, path);
 		},
 		filename: function (request, file, callback) {
 			var fileArray = file.originalname.split(".");
@@ -44,8 +52,7 @@ module.exports = function(app, models, multer, fs, path) {
 		if(allowUpload) {
 			var title = file.originalname;
 			var fileName = file.filename;
-			var path = "../../../server/songs/" + file.originalname;
-			var newSong = getSongScheme(Song, title, author, fileName, path);
+			var newSong = getSongScheme(Song, title, author, fileName);
 			newSong.save().then(song => {
 				response.status(200).json({uploaded: true, song: song});
 				response.end();
@@ -96,8 +103,8 @@ module.exports = function(app, models, multer, fs, path) {
         }
     });
     
-    function getSongScheme(Song, title, author, fileName, path) {
-		return new Song({title: title, author: author, fileName: fileName, path: path});
+    function getSongScheme(Song, title, author, fileName) {
+		return new Song({title: title, author: author, fileName: fileName});
 	}
 	function isEmpty(object) {
 		return !object || Object.keys(object).length === 0;
