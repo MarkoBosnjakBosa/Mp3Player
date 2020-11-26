@@ -1,4 +1,4 @@
-module.exports = function(app, models, fs, path) {
+module.exports = function(app, models, fs) {
 	const Artist = models.Artist;
 	const folderPath = "../client/src/assets/songs/";
 	app.get("/getArtists", (request, response) => {

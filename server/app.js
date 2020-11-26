@@ -13,6 +13,7 @@ const databaseUrl = process.env.DATABASE_URL;
 app.use(cors({origin: "*"}));
 app.use(express.json());
 
+const artists = require("./routes/artists.js")(app, models, fs);
 const songs = require("./routes/songs.js")(app, models, multer, fs, path);
 
 mongoose.connect(databaseUrl, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
