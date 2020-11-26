@@ -30,7 +30,7 @@
 
 	export default {
 		name: "player",
-		data () {
+		data() {
 			return {
 				current: {},
 				index: 0,

@@ -1,27 +1,27 @@
 <template>
-	<div id="songs" class="container-fluid">
-		<h1>Songs</h1>
-		<songs-form :returnedData="returnedData" @uploadsong="uploadSong" @resetdata="resetData"/>
-		<songs-table :songs="songs" @editsong="editSong" @deletesong="deleteSong"/>
+	<div id="artists" class="container-fluid">
+		<h1>Artists</h1>
+		<artists-form :returnedData="returnedData" @createartist="createArtist" @resetdata="resetData"/>
+		<artists-table :artists="artists" @editartist="editArtist" @deleteartist="deleteArtist"/>
 	</div>
 </template>
 
 <script>
 	import "bootstrap";
-	import "bootstrap/dist/css/bootstrap.min.css";
-	import SongsTable from "../components/songs/SongsTable.vue";
-	import SongsForm from "../components/songs/SongsForm.vue";
+    import "bootstrap/dist/css/bootstrap.min.css";
+    import ArtistsForm from "../components/artists/ArtistsForm.vue";
+	import ArtistsTable from "../components/artists/ArtistsTable.vue";
     var axios = require("axios");
     
 	export default {
 		name: "songs",
 		components: {
-			SongsTable,
-			SongsForm
+            ArtistsForm,
+			ArtistsTable
 		},
         data() {
             return {
-                songs: [],
+                artists: [],
                 returnedData: {
                     uploaded: false,
                     errorFields: []
@@ -29,12 +29,12 @@
             }
         },
         methods: {
-            getSongs() {
-                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getSongs").then(response => {
-                    this.songs = response.data.songs;
+            getArtists() {
+                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getArtists").then(response => {
+                    this.artists = response.data.artists;
                 }).catch(error => console.log(error));
             },
-            uploadSong(formData) {
+            createArtist(formData) {
                 axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/uploadSong", formData).then(response => {
                     var returnedData = {};
                     if(response.data.uploaded) {
@@ -48,7 +48,7 @@
                     }
                 }).catch(error => console.log(error));
             },
-            editSong(updatedSong) {
+            editArtist(updatedSong) {
                 var body = {songId: updatedSong._id, title: updatedSong.title, author: updatedSong.author};
                 axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/editSong", body).then(response => {
                     if(response.data.edited) {
@@ -56,7 +56,7 @@
                     }
                 }).catch(error => console.log(error));
             },
-            deleteSong(songId) {
+            deleteArtist(songId) {
                 axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/deleteSong/" + songId).then(response => {
                     if(response.data.deleted) {
                         this.songs = this.songs.filter(song => song._id != songId);
@@ -69,7 +69,7 @@
             }
         },
         created() {
-            this.getSongs();
+            //this.getArtists();
         }
     }
 </script>

@@ -1,5 +1,6 @@
 module.exports = function(app, models, multer, fs, path) {
 	const Song = models.Song;
+	const folderPath = "../client/src/assets/songs/";
 	app.get("/getSongs", (request, response) => {
 		var query = {};
         Song.find(query).then(songs => {
@@ -9,15 +10,14 @@ module.exports = function(app, models, multer, fs, path) {
 	});
 	var storage = multer.diskStorage({
 		destination: function (request, file, callback) {
-			var author = request.body.author;
-			var path = "../client/src/assets/songs/" + author;
+			var artist = request.body.artist;
 			var existingFolder = null;
 			try {
-				existingFolder = fs.statSync(path);
+				existingFolder = fs.statSync(folderPath + artist);
 			} catch(error) {
-				fs.mkdirSync(path);
+				fs.mkdirSync(folderPath + artist);
 			}
-			callback(null, path);
+			callback(null, folderPath + artist);
 		},
 		filename: function (request, file, callback) {
 			var fileArray = file.originalname.split(".");
