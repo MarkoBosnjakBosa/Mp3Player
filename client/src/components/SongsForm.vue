@@ -3,8 +3,8 @@
 		<form autocomplete="off" @submit.prevent="uploadSong()" enctype="multipart/form-data">
 			<div class="form-row">
 				<div class="form-group col-md-6">
-					<select id="author" class="form-control" :class="{'errorField' : authorError && submitting}" v-model="song.author" @focus="clearAuthorStatus()" @keypress="clearAuthorStatus()">
-						<option value="" disabled selected>Select author...</option>
+					<select id="artist" class="form-control" :class="{'errorField' : artistError && submitting}" v-model="song.artist" @focus="clearArtistStatus()" @keypress="clearArtistStatus()">
+						<option value="" disabled selected>Select artist...</option>
 						<option value="Bon Jovi">Bon Jovi</option>
 						<option value="Linkin Park">Linkin Park</option>
 						<option value="ACDC">ACDC</option>
@@ -12,7 +12,7 @@
 						<option value="Duran Duran">Duran Duran</option>
 						<option value="other">Other</option>
 					</select>
-					<small v-if="(authorError && submitting) || (!returnedData.created && returnedData.errorFields.includes('author'))" class="form-text errorInput">Please provide a valid author!</small>
+					<small v-if="(artistError && submitting) || (!returnedData.created && returnedData.errorFields.includes('artist'))" class="form-text errorInput">Please provide a valid artist!</small>
 				</div>
                 <div class="form-group col-md-6">
 					<input type="file" id="file" class="inputFile" @change="selectFile($event)"/>
@@ -35,10 +35,10 @@
 		data() {
 			return {
 				submitting: false,
-				authorError: false,
+				artistError: false,
 				fileError: false,
 				song: {
-					author: "",
+					artist: "",
 					file: ""
 				}
 			}
@@ -49,11 +49,11 @@
 		methods: {
 			uploadSong() {
 				this.submitting = true;
-				this.clearAuthorStatus();
+				this.clearArtistStatus();
 				this.clearFileStatus();
 				var allowUpload = true;
-				if(this.invalidAuthor) {
-					this.authorError = true;
+				if(this.invalidArtist) {
+					this.artistError = true;
 					allowUpload = false;
 				}
 				if(this.invalidFile) {
@@ -65,15 +65,15 @@
 					return;
 				}
 				var formData = new FormData();
-				formData.append("author", this.song.author);
+				formData.append("artist", this.song.artist);
 				formData.append("file", this.song.file);
 				this.$emit("uploadsong", formData);
-				this.song = {author: "", file: ""};
+				this.song = {artist: "", file: ""};
 				document.getElementById("file").value = "";
 				document.getElementById("fileName").textContent = "Choose a song";
-				this.authorError = false, this.fileError = false, this.submitting = false;
+				this.artistError = false, this.fileError = false, this.submitting = false;
 			},
-			clearAuthorStatus() { this.authorError = false; },
+			clearArtistStatus() { this.artistError = false; },
 			clearFileStatus() { this.fileError = false; },
 			selectFile(event) {
 				var files = event.target.files;
@@ -90,15 +90,15 @@
 				}
 			},
 			resetForm() {
-				this.song = {author: "", file: ""};
+				this.song = {artist: "", file: ""};
 				document.getElementById("file").value = "";
 				document.getElementById("fileName").textContent = "Choose a song";
-				this.authorError = false, this.fileError = false, this.submitting = false;
+				this.artistError = false, this.fileError = false, this.submitting = false;
 				this.$emit("resetdata");
 			}
 		},
 		computed: {
-            invalidAuthor() { return this.song.author === ""; },
+            invalidArtist() { return this.song.artist === ""; },
             invalidFile() { return this.song.file === ""; }
 		},
 	}

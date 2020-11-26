@@ -5,7 +5,7 @@
 		</header>
 		<main>
 			<section class="player">
-				<h2 class="song-title">{{ current.title }} - <span>{{ current.author }}</span></h2>
+				<h2 class="song-title">{{ current.title }} - <span>{{ current.artist }}</span></h2>
 				<div class="controls">
 					<button class="prev" @click="prev">Prev</button>
 					<button class="play" v-if="!isPlaying" @click="play">Play</button>
@@ -16,7 +16,7 @@
 			<section class="playlist">
 				<h3>The Playlist</h3>
 				<button v-for="song in songs" :key="song.src" @click="play(song)" :class="(song.src == current.src) ? 'song playing' : 'song'">
-					{{ song.title }} - {{ song.author }}
+					{{ song.title }} - {{ song.artist }}
 				</button>
 			</section>
 		</main>
@@ -47,8 +47,8 @@
 					uploadedSongs.forEach(song => {
 						var songObject = {};
 						songObject["title"] = song.title;
-						songObject["author"] = song.author;
-						songObject["src"] = require("../assets/songs/" + song.author + "/" + song.fileName);
+						songObject["artist"] = song.artist;
+						songObject["src"] = require("../assets/songs/" + song.artist + "/" + song.fileName);
 						songs.push(songObject);
 					});
 					this.songs = songs;

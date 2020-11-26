@@ -4,7 +4,7 @@
 			<thead>
 				<th scope="col">#</th>
 				<th scope="col">Title</th>
-				<th scope="col">Author</th>
+				<th scope="col">Artist</th>
 				<th scope="col">Actions</th>
 				<th scope="col">
 					<select id="filter" class="form-control" v-model="filter">
@@ -27,7 +27,7 @@
 					<td v-if="editing == song._id"><input type="text" class="form-control" v-model="song.title"/></td>
 					<td v-else>{{song.title}}</td>
 					<td v-if="editing == song._id">
-					<select class="form-control" v-model="song.author">
+					<select class="form-control" v-model="song.artist">
 						<option value="Bon Jovi">Bon Jovi</option>
 						<option value="Linkin Park">Linkin Park</option>
 						<option value="ACDC">ACDC</option>
@@ -36,7 +36,7 @@
 						<option value="other">Other</option>
 					</select>
 					</td>
-					<td v-else style="text-transform: capitalize">{{song.author}}</td>
+					<td v-else style="text-transform: capitalize">{{song.artist}}</td>
 					<td v-if="editing == song._id" class="padded">
 						<i class="far fa-check-circle" @click="editSong(song)"></i>
 						<i class="far fa-times-circle" @click="disableEditing(song)"></i>
@@ -73,7 +73,7 @@
 				this.editing = null; 
 			},
 			editSong(song) {
-				if(song.title != "" && song.author != "" && song.file != "") {
+				if(song.title != "" && song.artist != "" && song.file != "") {
 					this.$emit("editsong", song);
 					this.editing = null;
 				} else {
@@ -85,17 +85,17 @@
 		computed: {
 			filterByBand() {
 				if(this.filter == "Bon Jovi") {
-					return this.songs.filter(song => song.author == "Bon Jovi");
+					return this.songs.filter(song => song.artist == "Bon Jovi");
 				} else if(this.filter == "Linkin Park") {
-					return this.songs.filter(song => song.author == "Linkin Park");
+					return this.songs.filter(song => song.artist == "Linkin Park");
 				} else if(this.filter == "ACDC") {
-					return this.songs.filter(song => song.author == "ACDC");
+					return this.songs.filter(song => song.artist == "ACDC");
 				} else if(this.filter == "Kiss") {
-					return this.songs.filter(song => song.author == "Kiss");
+					return this.songs.filter(song => song.artist == "Kiss");
 				} else if(this.filter == "Duran Duran") {
-					return this.songs.filter(song => song.author == "Duran Duran");
+					return this.songs.filter(song => song.artist == "Duran Duran");
 				} else if(this.filter == "other") {
-					return this.songs.filter(song => song.author == "other");
+					return this.songs.filter(song => song.artist == "other");
 				} else {
 					return this.songs;
 				}
