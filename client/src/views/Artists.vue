@@ -55,10 +55,10 @@
                     }
                 }).catch(error => console.log(error));
             },
-            deleteArtist(songId) {
-                axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/deleteSong/" + songId).then(response => {
+            deleteArtist(artistId) {
+                axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/deleteArtist/" + artistId).then(response => {
                     if(response.data.deleted) {
-                        this.songs = this.songs.filter(song => song._id != songId);
+                        this.artists = this.artists.filter(artist => artist._id != artistId);
                     }
                 }).catch(error => console.log(error));
             },
