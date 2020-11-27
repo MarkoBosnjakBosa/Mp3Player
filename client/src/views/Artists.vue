@@ -24,6 +24,7 @@
                 artists: [],
                 returnedData: {
                     created: false,
+                    artist: {},
                     alreadyExists: false,
                     errorFields: []
                 }

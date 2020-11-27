@@ -15,7 +15,7 @@ module.exports = function(app, models, fs) {
 			var query = {name: name};
 			Artist.findOne(query).then(artist => {
 				if(!isEmpty(artist)) {
-					response.status(200).json({created: false, alreadyExists: true, errorFields: errorFields});
+					response.status(200).json({created: false, artist: {}, alreadyExists: true, errorFields: errorFields});
 					response.end();
 				} else {
 					var newArtist = getArtistScheme(Artist, name);
@@ -30,7 +30,7 @@ module.exports = function(app, models, fs) {
 			}).catch(error => console.log(error));
 		} else {
 			errorFields.push("name");
-			response.status(200).json({created: false, alreadyExists: false, errorFields: errorFields});
+			response.status(200).json({created: false, artist: {}, alreadyExists: false, errorFields: errorFields});
 			response.end();
 		}
     });
