@@ -10,13 +10,12 @@ module.exports = function(app, models, fs) {
 	});
     app.post("/createArtist", (request, response) => {
 		var errorFields = [];
-		var name = request.body.artist;
+		var name = request.body.name;
 		if(name) {
 			var query = {name: name};
 			Artist.findOne(query).then(artist => {
 				if(!isEmpty(artist)) {
-					errorFields.push("artist");
-					response.status(200).json({created: false, errorFields: errorFields});
+					response.status(200).json({created: false, alreadyExists: true, errorFields: errorFields});
 					response.end();
 				} else {
 					var newArtist = getArtistScheme(Artist, name);
@@ -24,25 +23,26 @@ module.exports = function(app, models, fs) {
 						if(!fs.existsSync(folderPath + name)) {
 							fs.mkdirSync(folderPath + name);
 						}
-						response.status(200).json({created: true});
+						response.status(200).json({created: true, artist: artist, alreadyExists: false, errorFields: errorFields});
 						response.end();
 					}).catch(error => console.log(error));
 				}
 			}).catch(error => console.log(error));
 		} else {
-			errorFields.push("artist");
-			response.status(200).json({created: false, errorFields: errorFields});
+			errorFields.push("name");
+			response.status(200).json({created: false, alreadyExists: false, errorFields: errorFields});
 			response.end();
 		}
     });
     app.put("/editArtist", (request, response) => {
         var artistId = request.body.artistId;
-        var name = request.body.artist;
+        var name = request.body.name;
         if(artistId && name) {
             var query = {_id: artistId};
             var update = {name: name};
-            Artist.findOneAndUpdate(query, update, {new: true}).then(artist => {
+            Artist.findOneAndUpdate(query, update).then(artist => {
                 if(!isEmpty(artist)) {
+                    fs.renameSync(folderPath + artist.name, folderPath + name);
                     response.status(200).json({edited: true});
                     response.end();
                 } else {

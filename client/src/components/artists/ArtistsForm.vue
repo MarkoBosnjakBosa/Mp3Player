@@ -2,14 +2,14 @@
 	<div id="artistsForm">
 		<form class="form-inline" autocomplete="off" @submit.prevent="createArtist()">
 			<div class="form-group col-md-8">
-				<input type="text" id="artist" class="form-control" :class="{'errorField' : artistError}" placeholder="Artist" v-model="artist" @focus="clearArtistStatus()" @keypress="clearArtistStatus()"/>
+				<input type="text" id="name" class="form-control" :class="{'errorField' : nameError}" placeholder="Artist" v-model="name" @focus="clearNameStatus()" @keypress="clearNameStatus()"/>
 			</div>
 			<div class="form-group col-md-4">
 				<button type="submit" class="btn btn-primary">Save</button>
-				<button type="button" class="btn btn-danger resetForm" @click="resetForm()">Reset</button>
 			</div>
 		</form>
-		<small v-if="(artistError) || (!returnedData.created && returnedData.errorFields.includes('artist'))" class="form-text errorInput">Please provide a valid artist!</small>
+		<small v-if="nameError || (!returnedData.created && returnedData.errorFields.includes('name'))" class="form-text errorInput">Please provide a valid artist!</small>
+		<small v-if="returnedData.alreadyExists" class="form-text errorInput">The artist already exists!</small>
 		<div v-if="returnedData.created" class="form-group creationSuccessful">Your artist has been successfully created!</div>
 	</div>
 </template>
@@ -19,8 +19,8 @@
 		name: "artists-form",
 		data() {
 			return {
-				artistError: false,
-				artist: ""
+				nameError: false,
+				name: ""
 			}
 		},
 		props: {
@@ -28,25 +28,23 @@
 		},
 		methods: {
 			createArtist() {
-				this.clearArtistStatus();
-				if(this.invalidArtist) {
-					this.artistError = true;
+				this.clearNameStatus();
+				if(this.invalidName) {
+					this.nameError = true;
 					this.$emit("resetdata");
 					return;
 				}
-				this.$emit("createartist", this.artist);
-				this.artist = "";
-				this.artistError = false;
+				this.$emit("createartist", this.name);
+				this.name = "";
+				this.nameError = false;
 			},
-			clearArtistStatus() { this.artistError = false; },
-			resetForm() {
-				this.artist = "";
-				this.artistError = false;
+			clearNameStatus() { 
+				this.nameError = false; 
 				this.$emit("resetdata");
 			}
 		},
 		computed: {
-            invalidArtist() { return this.artist === ""; },
+            invalidName() { return this.name === ""; },
 		},
 	}
 </script>
@@ -60,11 +58,8 @@
 	.col-md-8 {
 		padding-right: 0px;
 	}
-	#artist {
+	#name {
 		width: 100%;
-	}
-	.resetForm {
-		margin-left: 10px;
 	}
 	.creationSuccessful {
 		color: #008000;

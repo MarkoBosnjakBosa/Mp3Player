@@ -23,7 +23,8 @@
             return {
                 artists: [],
                 returnedData: {
-                    uploaded: false,
+                    created: false,
+                    alreadyExists: false,
                     errorFields: []
                 }
             }
@@ -34,25 +35,23 @@
                     this.artists = response.data.artists;
                 }).catch(error => console.log(error));
             },
-            createArtist(formData) {
-                axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/uploadSong", formData).then(response => {
-                    var returnedData = {};
-                    if(response.data.uploaded) {
-                        var newSong = response.data.song;
-                        this.songs = [...this.songs, newSong];
-                        returnedData = {created: true, errorFields: []};
-                        this.returnedData = returnedData;
+            createArtist(name) {
+                var body = {name: name};
+                axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/createArtist", body).then(response => {
+                    if(response.data.created) {
+                        var newArtist = response.data.artist;
+                        this.artists = [...this.artists, newArtist];
+                        this.returnedData = response.data;
                     } else {
-                        returnedData = {uploaded: false, errorFields: response.data.errorFields};
-                        this.returnedData = returnedData;
+                        this.returnedData = response.data;
                     }
                 }).catch(error => console.log(error));
             },
-            editArtist(updatedSong) {
-                var body = {songId: updatedSong._id, title: updatedSong.title, author: updatedSong.author};
-                axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/editSong", body).then(response => {
+            editArtist(updatedArtist) {
+                var body = {artistId: updatedArtist._id, name: updatedArtist.name};
+                axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/editArtist", body).then(response => {
                     if(response.data.edited) {
-                        this.songs = this.songs.map(song => song._id == updatedSong._id ? updatedSong : song);
+                        this.artists = this.artists.map(artist => artist._id == updatedArtist._id ? updatedArtist : artist);
                     }
                 }).catch(error => console.log(error));
             },
@@ -64,12 +63,12 @@
                 }).catch(error => console.log(error));
             },
             resetData() {
-                var reset = {uploaded: false, errorFields: []};
+                var reset = {uploaded: false, alreadyExists: false, errorFields: []};
                 this.returnedData = reset;
             }
         },
         created() {
-            //this.getArtists();
+            this.getArtists();
         }
     }
 </script>
