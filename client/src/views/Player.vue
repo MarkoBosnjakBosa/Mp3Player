@@ -94,7 +94,7 @@
 			}
 		},
 		created() {
-			this.getSongs();
+			//this.getSongs();
 		}
 	}
 </script>

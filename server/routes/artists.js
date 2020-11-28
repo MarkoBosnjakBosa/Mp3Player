@@ -40,14 +40,9 @@ module.exports = function(app, models, fs) {
         if(artistId && name) {
             var query = {_id: artistId};
             var update = {name: name};
-            if(!fs.existsSync(folderPath + name)) {
-                response.status(200).json({edited: false});
-                response.end();
-                return;
-            }
             Artist.findOneAndUpdate(query, update).then(artist => {
                 if(!isEmpty(artist)) {
-                    fs.renameSync(folderPath + artist.name, folderPath + name);
+                    //fs.renameSync(folderPath + artist.name, folderPath + name);
                     response.status(200).json({edited: true});
                     response.end();
                 } else {

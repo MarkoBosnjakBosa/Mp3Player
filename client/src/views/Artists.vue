@@ -1,33 +1,79 @@
 <template>
 	<div id="artists" class="container-fluid">
-		<h1>Artists</h1>
-		<artists-form :returnedData="returnedData" @createartist="createArtist" @resetdata="resetData"/>
-		<artists-table :artists="artists" @editartist="editArtist" @deleteartist="deleteArtist"/>
+        <div class="artistsIcon">
+				<i class="far fa-folder fa-7x"></i>
+			</div>
+        <div id="artistsForm">
+            <form autocomplete="off" @submit.prevent="createArtist()">
+                <div class="form-group">
+                    <input type="text" id="name" class="form-control" :class="{'errorField' : nameError && submitting}" placeholder="Name" v-model="artist.name" ref="first" @focus="clearNameStatus()" @keypress="clearNameStatus()"/>
+                    <small v-if="nameError && submitting" class="form-text errorInput">Please provide a valid artist!</small>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="folder" class="form-control" :class="{'errorField' : folderError && submitting}" placeholder="Folder" v-model="artist.folder" @focus="clearFolderStatus()" @keypress="clearFolderStatus()"/>
+                    <small v-if="folderError && submitting" class="form-text errorInput">Please provide a valid artist!</small>
+                </div>
+                <div v-if="alreadyExists == 'name'" class="form-group creationFailed">The name already exists!</div>
+                <div v-if="alreadyExists == 'folder'" class="from-group creationFailed">The folder already exists!</div>
+                <div v-if="artistCreated" class="form-group creationSuccessful">Your artist has been successfully created!</div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-danger resetForm" @click="resetForm()">Reset</button>
+                </div>
+            </form>
+        </div>
+        <table id="artistsTable" class="table">
+            <thead>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Folder</th>
+                <th scope="col">Actions</th>
+            </thead>
+            <tbody>
+                <tr v-if="!artists.length">
+                    <td colspan="6" class="noArtists">No artists found!</td>
+                </tr>
+                <tr v-for="(artist, index) in artists" :key="artist._id">
+                    <th scope="row">{{++index}}</th>
+                    <td v-if="editing == artist._id"><input type="text" class="form-control" v-model="artist.name"/></td>
+                    <td v-else>{{artist.name}}</td>
+                    <td>{{artist.folder}}</td>
+                    <td v-if="editing == artist._id" class="padded">
+                        <i class="far fa-check-circle editArtist" @click="editArtist(artist)"></i>
+                        <i class="far fa-times-circle disableEditing" @click="disableEditing(artist)"></i>
+                    </td>
+                    <td v-else>
+                        <i class="fas fa-pencil-alt" @click="enableEditing(artist)"></i>
+                        <i class="fas fa-trash" @click="deleteArtist(artist._id)"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 	</div>
 </template>
 
 <script>
 	import "bootstrap";
     import "bootstrap/dist/css/bootstrap.min.css";
-    import ArtistsForm from "../components/artists/ArtistsForm.vue";
-	import ArtistsTable from "../components/artists/ArtistsTable.vue";
     var axios = require("axios");
     
 	export default {
-		name: "songs",
+		name: "artists",
 		components: {
-            ArtistsForm,
-			ArtistsTable
 		},
         data() {
             return {
                 artists: [],
-                returnedData: {
-                    created: false,
-                    artist: {},
-                    alreadyExists: false,
-                    errorFields: []
-                }
+                submitting: false,
+                nameError: false,
+                folderError: false,
+                artist: {
+                    name: "",
+                    folder: ""
+                },
+                artistCreated: false,
+                alreadyExists: false,
+                editing: null
             }
         },
         methods: {
@@ -37,24 +83,66 @@
                 }).catch(error => console.log(error));
             },
             createArtist(name) {
+                this.submitting = true;
+                this.clearNameStatus();
+                this.clearFolderStatus();
+                var allowSubmit = true;
+                if(this.invalidName) {
+                    this.nameError = true;
+                    allowSubmit = false;
+                }
+                if(this.invalidFolder) {
+                    this.folderError = true;
+                    allowSubmit = false;
+                }
+                if(!allowSubmit) {
+                    this.alreadyExists = "";
+                    this.artistCreated = false;
+                    return;
+                }
                 var body = {name: name};
                 axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/createArtist", body).then(response => {
                     if(response.data.created) {
                         var newArtist = response.data.artist;
                         this.artists = [...this.artists, newArtist];
-                        this.returnedData = response.data;
+                        this.artistCreated = true;
+                        this.$refs.first.focus();
+                        this.artist = {name: "", folder: ""};
+                        this.nameError = false, this.folderError = false, this.publicSubmitting = false;
                     } else {
-                        this.returnedData = response.data;
-                    }
+						if(response.data.alreadyExists) {
+							this.alreadyExists = response.data.field;
+							this.artistCreated = false;
+						} else {
+							var errorFields = response.data.errorFields;
+							if(errorFields.includes("name")) this.nameError = true;
+							if(errorFields.includes("folder")) this.folderError = true;
+							this.alreadyExists = "";
+							this.artistCreated = false;
+						}
+					}
                 }).catch(error => console.log(error));
             },
+            enableEditing(artist) {
+                this.cachedArtist = Object.assign({}, artist);
+                this.editing = artist._id;
+            },
+            disableEditing(artist) {
+                Object.assign(artist, this.cachedArtist);
+                this.editing = null;
+            },
             editArtist(updatedArtist) {
-                var body = {artistId: updatedArtist._id, name: updatedArtist.name};
-                axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/editArtist", body).then(response => {
-                    if(response.data.edited) {
-                        this.artists = this.artists.map(artist => artist._id == updatedArtist._id ? updatedArtist : artist);
-                    }
-                }).catch(error => console.log(error));
+                if(updatedArtist.name != "") {
+                    var body = {artistId: updatedArtist._id, name: updatedArtist.name};
+                    axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/editArtist", body).then(response => {
+                        if(response.data.edited) {
+                            this.artists = this.artists.map(artist => artist._id == updatedArtist._id ? updatedArtist : artist);
+                            this.editing = null;
+                        }
+                    }).catch(error => console.log(error));
+                } else {
+                    return;
+                }
             },
             deleteArtist(artistId) {
                 axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/deleteArtist/" + artistId).then(response => {
@@ -63,21 +151,66 @@
                     }
                 }).catch(error => console.log(error));
             },
-            resetData() {
-                var reset = {uploaded: false, alreadyExists: false, errorFields: []};
-                this.returnedData = reset;
-            }
+            resetForm() {
+                this.artist = {name: "", folder: ""};
+                this.alreadyExists = "";
+				this.nameError = false, this.folderError = false, this.artistCreated = false, this.submitting = false;
+            },
+            clearNameStatus() { this.nameError = false; },
+			clearFolderStatus() { this.folderError = false; },
         },
+        computed: {
+			invalidName() { return this.artist.name === ""; },
+			invalidFolder() { return this.artist.folder === ""; }
+		},
         created() {
             this.getArtists();
         }
     }
 </script>
 
-<style>
-	h1 {
-		text-align: center;
+<style scoped>
+    .artistsIcon {
 		margin-top: 20px;
 		margin-bottom: 20px;
+        text-align: center;
 	}
+    #artistsForm {
+        margin: 0 auto;
+        max-width: 500px;
+    }
+    #artistsTable {
+        margin: 0 auto;
+        max-width: 1000px;
+    }
+    tbody .fas, tbody .far {
+        cursor: pointer;
+        margin-right: 5px;
+    }
+    .padded {
+        padding-top: 20px;
+    }
+    .editArtist {
+        color: #008000;
+    }
+    .disableEditing {
+        color: #ff0000;
+    }
+    .noArtists {
+        text-align: center;
+    }
+    .resetForm {
+		margin-left: 10px;
+	}
+    .creationSuccessful {
+        color: #008000;
+        margin-bottom: 10px;
+    }
+    .errorField {
+        border: 1px solid #ff0000;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 6px #ff8080;
+    }
+    .errorInput {
+        color: #ff0000;
+    }
 </style>
