@@ -22,7 +22,7 @@ module.exports = function(app, models, fs) {
 			allowCreation = false;
 		}
 		if(allowCreation) {
-			var query = {name: name, folder: folder};
+			var query = {$or: [{name: name}, {folder: folder}]};
 			Artist.findOne(query).then(artist => {
 				if(!isEmpty(artist)) {
 					var error = {created: false, alreadyExists: true};
@@ -34,10 +34,10 @@ module.exports = function(app, models, fs) {
 					response.status(200).json(error);
 					response.end();
 				} else {
-					var newArtist = getArtistScheme(Artist, name);
+					var newArtist = getArtistScheme(Artist, name, folder);
 					newArtist.save().then(artist => {
-						if(!fs.existsSync(folderPath + name)) {
-							fs.mkdirSync(folderPath + name);
+						if(!fs.existsSync(folderPath + folder)) {
+							fs.mkdirSync(folderPath + folder);
 						}
 						response.status(200).json({created: true, artist: artist});
 						response.end();
@@ -57,7 +57,6 @@ module.exports = function(app, models, fs) {
             var update = {name: name};
             Artist.findOneAndUpdate(query, update).then(artist => {
                 if(!isEmpty(artist)) {
-                    //fs.renameSync(folderPath + artist.name, folderPath + name);
                     response.status(200).json({edited: true});
                     response.end();
                 } else {
@@ -76,8 +75,8 @@ module.exports = function(app, models, fs) {
 			var query = {_id: artistId};
             Artist.findOneAndRemove(query).then(artist => {
                 if(!isEmpty(artist)) {
-                    if(fs.existsSync(folderPath + artist.name)) {
-                        fs.rmdirSync(folderPath + artist.name);
+                    if(fs.existsSync(folderPath + artist.folder)) {
+                        fs.rmdirSync(folderPath + artist.folder);
                     }
                     response.status(200).json({deleted: true});
                     response.end();
@@ -92,12 +91,12 @@ module.exports = function(app, models, fs) {
         }
     });
     
-    function getArtistScheme(Artist, name) {
-		return new Artist({name: name});
+    function getArtistScheme(Artist, name, folder) {
+		return new Artist({name: name, folder: folder});
     }
     function invalidFolder(folder) {
 		var folderFormat = /^[a-z0-9_.]*$/;
-		if(folder != "" || folderFormat.test(folder)) {
+		if(folder != "" && folderFormat.test(folder)) {
 			return false;
 		} else {
 			return true;

@@ -7,17 +7,17 @@
             <form autocomplete="off" @submit.prevent="createArtist()">
                 <div class="form-group">
                     <input type="text" id="name" class="form-control" :class="{'errorField' : nameError && submitting}" placeholder="Name" v-model="artist.name" ref="first" @focus="clearNameStatus()" @keypress="clearNameStatus()"/>
-                    <small v-if="nameError && submitting" class="form-text errorInput">Please provide a valid artist!</small>
+                    <small v-if="nameError && submitting" class="form-text errorInput">Please provide a valid name!</small>
                 </div>
                 <div class="form-group">
                     <input type="text" id="folder" class="form-control" :class="{'errorField' : folderError && submitting}" placeholder="Folder" v-model="artist.folder" @focus="clearFolderStatus()" @keypress="clearFolderStatus()"/>
-                    <small v-if="folderError && submitting" class="form-text errorInput">Please provide a valid artist!</small>
+                    <small v-if="folderError && submitting" class="form-text errorInput">Please provide a valid folder!</small>
                 </div>
                 <div v-if="alreadyExists == 'name'" class="form-group creationFailed">The name already exists!</div>
                 <div v-if="alreadyExists == 'folder'" class="from-group creationFailed">The folder already exists!</div>
-                <div v-if="artistCreated" class="form-group creationSuccessful">Your artist has been successfully created!</div>
+                <div v-if="artistCreated" class="form-group creationSuccessful">The artist has been successfully added!</div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
                     <button type="button" class="btn btn-danger resetForm" @click="resetForm()">Reset</button>
                 </div>
             </form>
@@ -37,7 +37,8 @@
                     <th scope="row">{{++index}}</th>
                     <td v-if="editing == artist._id"><input type="text" class="form-control" v-model="artist.name"/></td>
                     <td v-else>{{artist.name}}</td>
-                    <td>{{artist.folder}}</td>
+                    <td v-if="editing == artist._id" class="padded">{{artist.folder}}</td>
+                    <td v-else>{{artist.folder}}</td>
                     <td v-if="editing == artist._id" class="padded">
                         <i class="far fa-check-circle editArtist" @click="editArtist(artist)"></i>
                         <i class="far fa-times-circle disableEditing" @click="disableEditing(artist)"></i>
@@ -59,8 +60,6 @@
     
 	export default {
 		name: "artists",
-		components: {
-		},
         data() {
             return {
                 artists: [],
@@ -108,6 +107,7 @@
                         this.artistCreated = true;
                         this.$refs.first.focus();
                         this.artist = {name: "", folder: ""};
+                        this.alreadyExists = "";
                         this.nameError = false, this.folderError = false, this.publicSubmitting = false;
                     } else {
 						if(response.data.alreadyExists) {
@@ -134,7 +134,7 @@
             editArtist(updatedArtist) {
                 if(updatedArtist.name != "") {
                     var body = {artistId: updatedArtist._id, name: updatedArtist.name};
-                    axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/editArtist", body).then(response => {
+                    axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/editArtist", body).then(response => {
                         if(response.data.edited) {
                             this.artists = this.artists.map(artist => artist._id == updatedArtist._id ? updatedArtist : artist);
                             this.editing = null;
@@ -161,7 +161,16 @@
         },
         computed: {
 			invalidName() { return this.artist.name === ""; },
-			invalidFolder() { return this.artist.folder === ""; }
+			invalidFolder() { 
+                var folderFormat = /^[a-z0-9_.]*$/;
+				if(this.artist.folder != "" && folderFormat.test(this.artist.folder)) {
+                    console.log(1);
+					return false;
+				} else {
+                    console.log(2);
+					return true;
+                }
+            }
 		},
         created() {
             this.getArtists();
@@ -206,6 +215,10 @@
         color: #008000;
         margin-bottom: 10px;
     }
+    .creationFailed {
+		color: #ff0000;
+		margin-bottom: 10px;
+	}
     .errorField {
         border: 1px solid #ff0000;
         box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 6px #ff8080;
