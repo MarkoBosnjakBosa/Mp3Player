@@ -1,6 +1,7 @@
 module.exports = function(mongoose) {
 	const artistScheme = new mongoose.Schema({
-		name: String
+		name: String,
+		folder: String
 	});
 	const songScheme = new mongoose.Schema({
 		title: String,

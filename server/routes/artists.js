@@ -9,13 +9,29 @@ module.exports = function(app, models, fs) {
 		}).catch(error => console.log(error));
 	});
     app.post("/createArtist", (request, response) => {
+		var allowCreation = true;
 		var errorFields = [];
 		var name = request.body.name;
-		if(name) {
-			var query = {name: name};
+		if(!name) {
+			errorFields.push("name");
+			allowCreation = false;
+		}
+		var folder = request.body.folder;
+		if(invalidFolder(folder)) {
+			errorFields.push("folder");
+			allowCreation = false;
+		}
+		if(allowCreation) {
+			var query = {name: name, folder: folder};
 			Artist.findOne(query).then(artist => {
 				if(!isEmpty(artist)) {
-					response.status(200).json({created: false, artist: {}, alreadyExists: true, errorFields: errorFields});
+					var error = {created: false, alreadyExists: true};
+					if(artist.name == name) {
+						error.field = "name";
+					} else {
+						error.field = "folder";
+					}
+					response.status(200).json(error);
 					response.end();
 				} else {
 					var newArtist = getArtistScheme(Artist, name);
@@ -23,14 +39,13 @@ module.exports = function(app, models, fs) {
 						if(!fs.existsSync(folderPath + name)) {
 							fs.mkdirSync(folderPath + name);
 						}
-						response.status(200).json({created: true, artist: artist, alreadyExists: false, errorFields: errorFields});
+						response.status(200).json({created: true, artist: artist});
 						response.end();
 					}).catch(error => console.log(error));
 				}
 			}).catch(error => console.log(error));
 		} else {
-			errorFields.push("name");
-			response.status(200).json({created: false, artist: {}, alreadyExists: false, errorFields: errorFields});
+			response.status(200).json({created: false, alreadyExists: false, errorFields: errorFields});
 			response.end();
 		}
     });
@@ -79,6 +94,14 @@ module.exports = function(app, models, fs) {
     
     function getArtistScheme(Artist, name) {
 		return new Artist({name: name});
+    }
+    function invalidFolder(folder) {
+		var folderFormat = /^[a-z0-9_.]*$/;
+		if(folder != "" || folderFormat.test(folder)) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	function isEmpty(object) {
 		return !object || Object.keys(object).length === 0;

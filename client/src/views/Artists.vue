@@ -82,7 +82,7 @@
                     this.artists = response.data.artists;
                 }).catch(error => console.log(error));
             },
-            createArtist(name) {
+            createArtist() {
                 this.submitting = true;
                 this.clearNameStatus();
                 this.clearFolderStatus();
@@ -100,7 +100,7 @@
                     this.artistCreated = false;
                     return;
                 }
-                var body = {name: name};
+                var body = {name: this.artist.name, folder: this.artist.folder};
                 axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/createArtist", body).then(response => {
                     if(response.data.created) {
                         var newArtist = response.data.artist;
