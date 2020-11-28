@@ -1,8 +1,8 @@
 <template>
 	<div id="artists" class="container-fluid">
         <div class="artistsIcon">
-				<i class="far fa-folder fa-7x"></i>
-			</div>
+            <i class="far fa-folder fa-7x"></i>
+        </div>
         <div id="artistsForm">
             <form autocomplete="off" @submit.prevent="createArtist()">
                 <div class="form-group">

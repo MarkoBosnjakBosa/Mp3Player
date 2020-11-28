@@ -17,7 +17,7 @@ module.exports = function(app, models, fs) {
 			allowCreation = false;
 		}
 		var folder = request.body.folder;
-		if(invalidFolder(folder)) {
+		if(!folder || invalidFolder(folder)) {
 			errorFields.push("folder");
 			allowCreation = false;
 		}
@@ -96,7 +96,7 @@ module.exports = function(app, models, fs) {
     }
     function invalidFolder(folder) {
 		var folderFormat = /^[a-z0-9_.]*$/;
-		if(folder != "" && folderFormat.test(folder)) {
+		if(folderFormat.test(folder)) {
 			return false;
 		} else {
 			return true;

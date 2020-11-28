@@ -58,7 +58,7 @@ module.exports = function(app, models, multer, fs, path) {
 				response.end();
 			}).catch(error => console.log(error));
 		} else {
-			response.status(200).json({uploaded: false, alreadyExists: false, errorFields: errorFields});
+			response.status(200).json({uploaded: false, errorFields: errorFields});
 			response.end();
 		}
     });
