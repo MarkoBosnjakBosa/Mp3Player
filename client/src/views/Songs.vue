@@ -1,6 +1,8 @@
 <template>
 	<div id="songs" class="container-fluid">
-		<h1>Songs</h1>
+		<div class="songsIcon">
+            <i class="fas fa-music fa-7x"></i>
+        </div>
 		<div id="songsForm">
             <form autocomplete="off" @submit.prevent="uploadSong()" enctype="multipart/form-data">
 			<div class="form-row">
@@ -134,7 +136,7 @@
                 }).catch(error => console.log(error));
             },
             editSong(updatedSong) {
-                var body = {songId: updatedSong._id, title: updatedSong.title, author: updatedSong.author};
+                var body = {songId: updatedSong._id, title: updatedSong.title};
                 axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/editSong", body).then(response => {
                     if(response.data.edited) {
                         this.songs = this.songs.map(song => song._id == updatedSong._id ? updatedSong : song);
@@ -148,9 +150,9 @@
                     }
                 }).catch(error => console.log(error));
             },
-            resetData() {
-                var reset = {uploaded: false, errorFields: []};
-                this.returnedData = reset;
+            resetForm() {
+                this.song = {artist: "", file: ""};
+                this.artistError = false, this.fileError = false, this.songUploaded = false, this.submitting = false;
             },
             clearArtistStatus() { this.artistError = false; },
 			clearFileStatus() { this.fileError = false; },
@@ -188,10 +190,10 @@
 </script>
 
 <style>
-	h1 {
-		text-align: center;
+	.songsIcon {
 		margin-top: 20px;
 		margin-bottom: 20px;
+        text-align: center;
 	}
     #songsForm {
 		max-width: 800px;

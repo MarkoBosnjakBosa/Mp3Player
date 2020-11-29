@@ -65,10 +65,9 @@ module.exports = function(app, models, multer, fs, path) {
     app.put("/editSong", (request, response) => {
         var songId = request.body.songId;
         var title = request.body.title;
-        var author = request.body.icon;
-        if(songId && title && author) {
+        if(songId && title) {
             var query = {_id: songId};
-            var update = {title: title, author: author};
+            var update = {title: title};
             Song.findOneAndUpdate(query, update, {new: true}).then(song => {
                 if(!isEmpty(song)) {
                     response.status(200).json({edited: true});
