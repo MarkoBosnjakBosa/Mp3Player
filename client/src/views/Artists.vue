@@ -1,5 +1,6 @@
 <template>
 	<div id="artists" class="container-fluid">
+        <navigation></navigation>
         <div class="artistsIcon">
             <i class="far fa-folder fa-7x"></i>
         </div>
@@ -56,10 +57,14 @@
 <script>
 	import "bootstrap";
     import "bootstrap/dist/css/bootstrap.min.css";
+    import Navigation from "@/components/Navigation.vue"; 
     var axios = require("axios");
     
 	export default {
-		name: "artists",
+        name: "artists",
+        components: {
+			Navigation
+		},
         data() {
             return {
                 artists: [],

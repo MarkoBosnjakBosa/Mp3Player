@@ -5,7 +5,9 @@ module.exports = function(mongoose) {
 	});
 	const songScheme = new mongoose.Schema({
 		title: String,
-		artist: String,
+		artistId: String,
+		artistName: String,
+		path: String,
 		fileName: String
 	});
 	const models = {

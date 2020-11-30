@@ -14,7 +14,7 @@ app.use(cors({origin: "*"}));
 app.use(express.json());
 
 const artists = require("./routes/artists.js")(app, models, fs);
-const songs = require("./routes/songs.js")(app, models, multer, fs, path);
+const songs = require("./routes/songs.js")(app, models, multer, fs);
 
 mongoose.connect(databaseUrl, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
 const database = mongoose.connection;
