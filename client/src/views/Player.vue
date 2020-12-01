@@ -1,37 +1,46 @@
 <template>
-	<div class="player">
-		<header>
-			<h1>My Music</h1>
-		</header>
-		<main>
-			<section class="player">
-				<h2 class="song-title">{{ current.title }} - <span>{{ current.artist }}</span></h2>
-				<div class="controls">
-					<button class="prev" @click="prev">Prev</button>
-					<button class="play" v-if="!isPlaying" @click="play">Play</button>
-					<button class="pause" v-else @click="pause">Pause</button>
-					<button class="next" @click="next">Next</button>
-				</div>
-			</section>
+	<div id="player">
+		<navigation></navigation>
+		<div class="playerIcon">
+            <i class="fas fa-headphones fa-7x"></i>
+        </div>
+		<div id="playerDiv">
+			<h1 class="song-title">{{ current.title }}</h1>
+			<div class="controls">
+				<button type="button" class="btn backward" @click="backward()"><i class="fas fa-backward"></i></button>
+				<button type="button" class="btn play" v-if="!isPlaying" @click="play('')"><i class="fas fa-play"></i></button>
+				<button type="button" class="btn pause" v-else @click="pause()"><i class="fas fa-pause"></i></button>
+				<button type="button" class="btn forward" @click="forward()"><i class="fas fa-forward"></i></button>
+			</div>
 			<section class="playlist">
 				<h3>The Playlist</h3>
-				<button v-for="song in songs" :key="song.src" @click="play(song)" :class="(song.src == current.src) ? 'song playing' : 'song'">
+				<ul class="list-group">
+					<li v-for="song in songs" :key="song.id" class="list-group-item" @click="play(song)">
+						<b><i :id="'i_' + song.id" class="songStatus fas fa-play"></i><span class="artist">{{song.title}}</span></b>
+					</li>
+				</ul>
+				<!--<button v-for="song in songs" :key="song.src" @click="play(song)" :class="(song.src == current.src) ? 'song playing' : 'song'">
 					{{ song.title }} - {{ song.artist }}
-				</button>
+				</button>-->
 			</section>
-		</main>
+		</div>
 	</div>
 </template>
 
 <script>
 	import "bootstrap";
 	import "bootstrap/dist/css/bootstrap.min.css";
+	import Navigation from "@/components/Navigation.vue"; 
     var axios = require("axios");
 
 	export default {
 		name: "player",
+		components: {
+			Navigation
+		},
 		data() {
 			return {
+				artistId: "",
 				current: {},
 				index: 0,
 				isPlaying: false,
@@ -41,19 +50,22 @@
 		},
 		methods: {
 			getSongs() {
-				axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getSongs").then(response => {
+				axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getSongsByArtist/" + this.artistId).then(response => {
 					var songs = [];
 					var uploadedSongs = response.data.songs;
-					uploadedSongs.forEach(song => {
-						var songObject = {};
-						songObject["title"] = song.title;
-						songObject["artist"] = song.artist;
-						songObject["src"] = require("../assets/songs/" + song.artist + "/" + song.fileName);
-						songs.push(songObject);
-					});
-					this.songs = songs;
-					this.current = this.songs[this.index];
-					this.player.src = this.current.src;
+					if(uploadedSongs.length) {
+						uploadedSongs.forEach(song => {
+							var songObject = {};
+							songObject["id"] = song._id;
+							songObject["title"] = song.title;
+							songObject["artist"] = song.artistName;
+							songObject["src"] = require("../assets/songs/" + song.path);
+							songs.push(songObject);
+						});
+						this.songs = songs;
+						this.current = this.songs[this.index];
+						this.player.src = this.current.src;
+					}
                 }).catch(error => console.log(error));
 			},
 			play(song) {
@@ -62,7 +74,7 @@
 					this.player.src = this.current.src;
 				}
 				this.player.play();
-				this.player.addEventListener('ended', function () {
+				this.player.addEventListener("ended", function () {
 					this.index++;
 					if(this.index > this.songs.length - 1) {
 						this.index = 0;
@@ -71,12 +83,14 @@
 					this.play(this.current);
 				}.bind(this));
 				this.isPlaying = true;
+				this.updateStatuses("play");
 			},
 			pause() {
 				this.player.pause();
 				this.isPlaying = false;
+				this.updateStatuses("pause");
 			},
-			next() {
+			forward() {
 				this.index++;
 				if(this.index > this.songs.length - 1) {
 					this.index = 0;
@@ -84,99 +98,74 @@
 				this.current = this.songs[this.index];
 				this.play(this.current);
 			},
-			prev() {
+			backward() {
 				this.index--;
 				if (this.index < 0) {
 					this.index = this.songs.length - 1;
 				}
 				this.current = this.songs[this.index];
 				this.play(this.current);
+			},
+			updateStatuses(type) {
+				var statuses = document.querySelectorAll(".songStatus");
+				statuses.forEach(status => {
+					if(status.classList.contains("fa-pause")) {
+						status.classList.remove("fa-pause");
+						status.classList.add("fa-play");
+					}
+				});
+				if(type == "play") {
+					var currentStatus = document.getElementById("i_" + this.current.id);
+					currentStatus.classList.remove("fa-play");
+					currentStatus.classList.add("fa-pause");
+				}
 			}
 		},
 		created() {
-			//this.getSongs();
+			this.artistId = this.$route.params.artistId;
+			this.getSongs();
 		}
 	}
 </script>
 
 <style>
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
-body {
-	font-family: sans-serif;
-}
-header {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 15px;
-	background-color: #212121;
-	color: #FFF;
-}
-main {
-  width: 100%;
-  max-width: 768px;
-  margin: 0 auto;
-  padding: 25px;
-}
-.song-title {
-  color: #53565A;
-  font-size: 32px;
-  font-weight: 700;
-  text-transform: uppercase;
-  text-align: center;
-}
-.song-title span {
-  font-weight: 400;
-  font-style: italic;
-}
-.controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 30px 15px;
-}
-button {
-  appearance: none;
-  background: none;
-  border: none;
-  outline: none;
-  cursor: pointer;
-}
-button:hover {
-  opacity: 0.8;
-}
-.play, .pause {
-  font-size: 20px;
-  font-weight: 700;
-  padding: 15px 25px;
-  margin: 0px 15px;
-  border-radius: 8px;
-  color: #FFF;
-  background-color: #CC2E5D;
-}
-.next, .prev {
-  font-size: 16px;
-  font-weight: 700;
-  padding: 10px 20px;
-  margin: 0px 15px;
-  border-radius: 6px;
-  color: #FFF;
-  background-color: #FF5858;
-}
-.playlist {
-  padding: 0px 30px;
-}
-.playlist h3 {
-  color: #212121;
-  font-size: 28px;
-  font-weight: 400;
-  margin-bottom: 30px;
-  text-align: center;
-}
+	.playerIcon {
+		margin-top: 20px;
+		margin-bottom: 20px;
+        text-align: center;
+	}
+	#playerDiv {
+        margin: 0 auto;
+        max-width: 500px;
+		text-align: center;
+    }
+	.controls {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding-top: 30px;
+		padding-bottom: 30px;
+	}
+	button:hover {
+		opacity: 0.8;
+		color: #fff !important;
+	}
+	.play, .pause {
+		font-size: 20px;
+		padding: 15px 25px;
+		margin: 0px 15px;
+		border-radius: 10px;
+		color: #FFF;
+		background-color: #CC2E5D;
+	}
+	.forward, .backward {
+		font-size: 16px;
+		padding: 10px 20px;
+		margin: 0px 15px;
+		border-radius: 10px;
+		color: #FFF;
+		background-color: #FF5858;
+	}
 .playlist .song {
   display: block;
   width: 100%;
@@ -192,4 +181,7 @@ button:hover {
   color: #FFF;
   background-image: linear-gradient(to right, #CC2E5D, #FF5858);
 }
+	.artist {
+        margin-left: 5px;
+    }
 </style>

@@ -7,7 +7,7 @@
         <div id="artistsList">
             <div v-if="!artists.length" class="noArtists">No artists found!</div>
             <ul class="list-group">
-                <li v-for="artist in artists" :key="artist._id" class="list-group-item d-flex justify-content-between align-items-center" @click="openPlayer(artist.folder)">
+                <li v-for="artist in artists" :key="artist._id" class="list-group-item d-flex justify-content-between align-items-center" @click="openPlayer(artist._id)">
                     <b><i class="far fa-folder"></i><span class="artist">{{artist.name}}</span></b>
                     <i class="fas fa-arrow-right"></i>
                 </li>
@@ -38,8 +38,8 @@
                     this.artists = response.data.artists;
                 }).catch(error => console.log(error));
             },
-            openPlayer(folder) {
-                this.$router.push("/player/" + folder);
+            openPlayer(artistId) {
+                this.$router.push("/player/" + artistId);
             }
         },
         created() {

@@ -9,6 +9,14 @@ module.exports = function(app, models, multer, fs) {
 			response.end();
 		}).catch(error => console.log(error));
 	});
+	app.get("/getSongsByArtist/:artistId", (request, response) => {
+		var artistId = request.params.artistId;
+		var query = {artistId: artistId};
+        Song.find(query).then(songs => {
+			response.status(200).json({songs: songs});
+			response.end();
+		}).catch(error => console.log(error));
+	});
 	var storage = multer.diskStorage({
 		destination: function (request, file, callback) {
 			var artistId = request.body.artistId;
@@ -55,7 +63,7 @@ module.exports = function(app, models, multer, fs) {
 				if(!isEmpty(artist)) {
 					var title = file.originalname;
 					var fileName = file.filename;
-					var path = folderPath + artist.folder + "/" + fileName;
+					var path = artist.folder + "/" + fileName;
 					var newSong = getSongScheme(Song, title, artistId, artist.name, path, fileName);
 					newSong.save().then(song => {
 						response.status(200).json({uploaded: true, song: song});

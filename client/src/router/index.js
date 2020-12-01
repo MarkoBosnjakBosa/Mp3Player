@@ -22,7 +22,7 @@ const routes = [
 		component: Songs
 	},
 	{
-		path: "/player/:artist",
+		path: "/player/:artistId",
 		name: "Player",
 		component: Player
 	},
