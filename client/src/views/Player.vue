@@ -5,15 +5,20 @@
             <i class="fas fa-headphones fa-7x"></i>
         </div>
 		<div id="playerDiv">
-			<h1 class="song-title">{{ current.title }}</h1>
+			<h1 class="song-title">{{current.title}}</h1>
 			<div class="controls">
 				<button type="button" class="btn backward" @click="backward()"><i class="fas fa-backward"></i></button>
 				<button type="button" class="btn play" v-if="!isPlaying" @click="play('')"><i class="fas fa-play"></i></button>
 				<button type="button" class="btn pause" v-else @click="pause()"><i class="fas fa-pause"></i></button>
 				<button type="button" class="btn forward" @click="forward()"><i class="fas fa-forward"></i></button>
+				<input type="range" min="0" :max="duration" v-model="playingTime">
+				{{duration}}
 			</div>
-			<section class="playlist">
-				<h3>The Playlist</h3>
+			<div class="controls">
+				<button type="button" class="btn" @click="changeVolume()"><i class="fas fa-forward"></i></button>
+			</div>
+			<div class="playlist">
+				<h2>{{artist}}</h2>
 				<ul class="list-group">
 					<li v-for="song in songs" :key="song.id" class="list-group-item" @click="play(song)">
 						<b><i :id="'i_' + song.id" class="songStatus fas fa-play"></i><span class="artist">{{song.title}}</span></b>
@@ -22,7 +27,7 @@
 				<!--<button v-for="song in songs" :key="song.src" @click="play(song)" :class="(song.src == current.src) ? 'song playing' : 'song'">
 					{{ song.title }} - {{ song.artist }}
 				</button>-->
-			</section>
+			</div>
 		</div>
 	</div>
 </template>
@@ -41,16 +46,20 @@
 		data() {
 			return {
 				artistId: "",
+				artist: "",
 				current: {},
 				index: 0,
 				isPlaying: false,
 				songs: [],
-				player: new Audio()
+				player: new Audio(),
+				playingTime: 0,
+				duration: "00:00"
 			}
 		},
 		methods: {
 			getSongs() {
 				axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getSongsByArtist/" + this.artistId).then(response => {
+					this.artist = response.data.artist;
 					var songs = [];
 					var uploadedSongs = response.data.songs;
 					if(uploadedSongs.length) {
@@ -74,7 +83,17 @@
 					this.player.src = this.current.src;
 				}
 				this.player.play();
-				this.player.addEventListener("ended", function () {
+				if(!isNaN(this.player.duration)) {
+					this.duration = this.convertTime(this.player.duration);
+				}
+				var temp = this;
+				this.player.addEventListener("loadedmetadata", function() {
+					temp.duration = this.convertTime(this.player.duration);
+				}.bind(this));
+				this.player.addEventListener("timeupdate", function() {
+					temp.playingTime = this.currentTime;
+				});
+				this.player.addEventListener("ended", function() {
 					this.index++;
 					if(this.index > this.songs.length - 1) {
 						this.index = 0;
@@ -119,6 +138,39 @@
 					currentStatus.classList.remove("fa-play");
 					currentStatus.classList.add("fa-pause");
 				}
+			},
+			changeVolume() {
+				if(this.player.muted) {
+					this.player.muted = false;
+				} else {
+					this.player.muted = true;
+				}
+			},
+			convertTime(time) {
+				var hours = Math.floor(time / 3600);
+				if(hours > 0 && hours < 10 ) {
+					hours = "0" + hours;
+				}
+				var minutes = Math.floor((time % 3600) / 60);
+				if(minutes < 10) {
+					minutes = "0" + minutes;
+				} 
+				var seconds = Math.floor(time % 60);
+				if(seconds < 10) {
+					seconds = "0" + minutes;
+				}
+				var formattedTime = "";
+				if(parseInt(hours) > 0) {
+					formattedTime = hours + ":" + minutes + ":" + seconds;
+				} else {
+					formattedTime = minutes + ':' + seconds;
+				}  
+				return formattedTime;
+			}
+		},
+		watch: {
+			playingTime (value) {
+				this.playingTime = value;
 			}
 		},
 		created() {

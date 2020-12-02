@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const models = require("./models/models.js")(mongoose);
 const multer = require("multer");
 const fs = require("fs");
-const path = require("path");
+const async = require("async");
 const dontenv = require("dotenv").config();
 const baseUrl = process.env.BASE_URL;
 const port = process.env.PORT;
@@ -14,7 +14,7 @@ app.use(cors({origin: "*"}));
 app.use(express.json());
 
 const artists = require("./routes/artists.js")(app, models, fs);
-const songs = require("./routes/songs.js")(app, models, multer, fs);
+const songs = require("./routes/songs.js")(app, models, multer, fs, async);
 
 mongoose.connect(databaseUrl, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
 const database = mongoose.connection;

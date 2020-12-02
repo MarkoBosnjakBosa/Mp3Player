@@ -1,4 +1,4 @@
-module.exports = function(app, models, multer, fs) {
+module.exports = function(app, models, multer, fs, async) {
 	const Artist = models.Artist;
 	const Song = models.Song;
 	const folderPath = "../client/src/assets/songs/";
@@ -11,11 +11,23 @@ module.exports = function(app, models, multer, fs) {
 	});
 	app.get("/getSongsByArtist/:artistId", (request, response) => {
 		var artistId = request.params.artistId;
-		var query = {artistId: artistId};
-        Song.find(query).then(songs => {
-			response.status(200).json({songs: songs});
+		var artistQuery = {_id: artistId};
+		var songsQuery = {artistId: artistId};
+		var queries = [];
+		queries.push(function(callback) {
+			Artist.findOne(artistQuery).then(artist => {
+				callback(null, artist);
+			}).catch(error => console.log(error));
+		});
+		queries.push(function(callback) {
+			Song.find(songsQuery).then(songs => {
+				callback(null, songs);
+			}).catch(error => console.log(error));
+		});
+		async.parallel(queries, function(error, results) {
+			response.status(200).json({artist: results[0].name, songs: results[1]});
 			response.end();
-		}).catch(error => console.log(error));
+		});
 	});
 	var storage = multer.diskStorage({
 		destination: function (request, file, callback) {
