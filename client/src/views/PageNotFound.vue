@@ -2,7 +2,7 @@
     <div id="overview" class="container-fluid">
         <div class="container pageNotFoundDiv">
             <div class="alert alert-danger" role="alert">Page not found!</div>
-            <button type="button" class="btn btn-info" @click="openPlayer()">Proceed to MP3 Player <i class="fas fa-music"></i></button>
+            <button type="button" class="btn btn-info" @click="openHome()">Proceed to MP3 Player <i class="fas fa-music"></i></button>
         </div>
     </div>
 </template>
@@ -15,7 +15,7 @@
         name: "pageNotFound",
         methods: {
             openPlayer() {
-                this.$router.push("/player");
+                this.$router.push("/home");
             }
         }
     }

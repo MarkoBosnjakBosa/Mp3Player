@@ -93,12 +93,12 @@
         },
         methods: {
             getSongs() {
-                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getSongs").then(response => {
+                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/getSongs").then(response => {
                     this.songs = response.data.songs;
                 }).catch(error => console.log(error));
             },
             getArtists() {
-                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getArtists").then(response => {
+                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/getArtists").then(response => {
                     this.artists = response.data.artists;
                 }).catch(error => console.log(error));
             },
@@ -122,7 +122,7 @@
 				var formData = new FormData();
 				formData.append("artistId", this.song.artistId);
 				formData.append("file", this.song.file);
-                axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/uploadSong", formData).then(response => {
+                axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/uploadSong", formData).then(response => {
                     if(response.data.uploaded) {
                         var newSong = response.data.song;
                         this.songs = [...this.songs, newSong];
@@ -148,7 +148,7 @@
             },
             editSong(updatedSong) {
                 var body = {songId: updatedSong._id, title: updatedSong.title};
-                axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/editSong", body).then(response => {
+                axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/editSong", body).then(response => {
                     if(response.data.edited) {
 						this.songs = this.songs.map(song => song._id == updatedSong._id ? updatedSong : song);
 						this.editing = null;
@@ -156,7 +156,7 @@
                 }).catch(error => console.log(error));
             },
             deleteSong(songId) {
-                axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/deleteSong/" + songId).then(response => {
+                axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/deleteSong/" + songId).then(response => {
                     if(response.data.deleted) {
                         this.songs = this.songs.filter(song => song._id != songId);
                     }

@@ -1,32 +1,52 @@
 <template>
 	<div id="player">
-		<navigation></navigation>
+		<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarOptions" aria-controls="navbarOptions" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="navbarOptions" class="collapse navbar-collapse">
+                <ul class="navbar-nav ml-auto mt-2 mt-lg-0 mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" :href="baseUrl + '/home'">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :href="baseUrl + '/songs'">Songs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :href="baseUrl + '/artists'">Artists</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 		<div class="playerIcon">
             <i class="fas fa-headphones fa-7x"></i>
         </div>
-		<div id="playerDiv">
-			<h1 class="song-title">{{current.title}}</h1>
+		<div id="playlist">
+			<h1>{{current.title}}</h1>
 			<div class="controls">
-				<button type="button" class="btn backward" @click="backward()"><i class="fas fa-backward"></i></button>
-				<button type="button" class="btn play" v-if="!isPlaying" @click="play('')"><i class="fas fa-play"></i></button>
-				<button type="button" class="btn pause" v-else @click="pause()"><i class="fas fa-pause"></i></button>
-				<button type="button" class="btn forward" @click="forward()"><i class="fas fa-forward"></i></button>
-				<input type="range" min="0" :max="duration" v-model="playingTime">
-				{{duration}}
+				<button type="button" class="btn btn-primary" @click="backward()"><i class="fas fa-backward"></i></button>
+				<button type="button" class="btn btn-danger" v-if="!isPlaying" @click="play('')"><i class="fas fa-play"></i></button>
+				<button type="button" class="btn btn-danger" v-else @click="pause()"><i class="fas fa-pause"></i></button>
+				<button type="button" class="btn btn-primary" @click="forward()"><i class="fas fa-forward"></i></button>
+				<button type="button" class="btn btn-info" v-if="!playingAgain" @click="playAgain()"><i class="fas fa-redo-alt"></i></button>
+				<button type="button" class="btn btn-info" v-else @click="playAgain()"><i class="fas fa-undo-alt"></i></button>
+				<button type="button" class="btn btn-info" v-if="volume > 0" @click="mute()"><i class="fas fa-volume-mute"></i></button>
+				<button type="button" class="btn btn-info" v-else @click="mute()"><i class="fas fa-volume-up"></i></button>
+				<button type="button" class="btn btn-light" @click="updateVolume('decrease')"><i class="fas fa-minus"></i></button>
+				<input type="range" min="0" max="1" step="0.1" v-model="volume" @input="updateVolume('')">
+				<button type="button" class="btn btn-light" @click="updateVolume('increase')"><i class="fas fa-plus"></i></button>
 			</div>
 			<div class="controls">
-				<button type="button" class="btn" @click="changeVolume()"><i class="fas fa-forward"></i></button>
+				<input type="range" min="0" :max="duration" v-model="playingTime" @input="seek()">
+				{{convertedPlayingTime}} / {{convertedDuration}}
 			</div>
-			<div class="playlist">
+			<div>
 				<h2>{{artist}}</h2>
 				<ul class="list-group">
 					<li v-for="song in songs" :key="song.id" class="list-group-item" @click="play(song)">
 						<b><i :id="'i_' + song.id" class="songStatus fas fa-play"></i><span class="artist">{{song.title}}</span></b>
 					</li>
 				</ul>
-				<!--<button v-for="song in songs" :key="song.src" @click="play(song)" :class="(song.src == current.src) ? 'song playing' : 'song'">
-					{{ song.title }} - {{ song.artist }}
-				</button>-->
 			</div>
 		</div>
 	</div>
@@ -35,30 +55,31 @@
 <script>
 	import "bootstrap";
 	import "bootstrap/dist/css/bootstrap.min.css";
-	import Navigation from "@/components/Navigation.vue"; 
     var axios = require("axios");
 
 	export default {
 		name: "player",
-		components: {
-			Navigation
-		},
 		data() {
 			return {
+				baseUrl: process.env.VUE_APP_BASE_URL + process.env.VUE_APP_CLIENT_PORT,
 				artistId: "",
 				artist: "",
+				songs: [],
 				current: {},
 				index: 0,
 				isPlaying: false,
-				songs: [],
 				player: new Audio(),
 				playingTime: 0,
-				duration: "00:00"
+				convertedPlayingTime: "00:00",
+				duration: 0,
+				convertedDuration: "00:00",
+				volume: 0,
+				playingAgain: false
 			}
 		},
 		methods: {
 			getSongs() {
-				axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getSongsByArtist/" + this.artistId).then(response => {
+				axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/getSongsByArtist/" + this.artistId).then(response => {
 					this.artist = response.data.artist;
 					var songs = [];
 					var uploadedSongs = response.data.songs;
@@ -83,15 +104,23 @@
 					this.player.src = this.current.src;
 				}
 				this.player.play();
+				if(this.volume < 0.1) {	
+					this.volume = this.player.volume;
+				} else {
+					this.player.volume = this.volume;
+				}
 				if(!isNaN(this.player.duration)) {
-					this.duration = this.convertTime(this.player.duration);
+					this.duration = this.player.duration;
+					this.convertedDuration = this.convertTime(this.player.duration);
 				}
 				var temp = this;
 				this.player.addEventListener("loadedmetadata", function() {
-					temp.duration = this.convertTime(this.player.duration);
+					temp.duration = this.player.duration;
+					temp.convertedDuration = temp.convertTime(this.player.duration);
 				}.bind(this));
 				this.player.addEventListener("timeupdate", function() {
 					temp.playingTime = this.currentTime;
+					temp.convertedPlayingTime = temp.convertTime(this.currentTime);
 				});
 				this.player.addEventListener("ended", function() {
 					this.index++;
@@ -119,11 +148,57 @@
 			},
 			backward() {
 				this.index--;
-				if (this.index < 0) {
+				if(this.index < 0) {
 					this.index = this.songs.length - 1;
 				}
 				this.current = this.songs[this.index];
 				this.play(this.current);
+			},
+			playAgain() {
+				if(this.player.loop) {
+					this.player.loop = false;
+					this.playingAgain = false;
+				} else {
+					this.player.loop = true;
+					this.playingAgain = true;
+				}
+			},
+			mute() {
+				if(this.isPlaying) {
+					if(this.player.muted) {
+						this.player.muted = false;
+						this.volume = this.player.volume.toFixed(1);
+					} else {
+						this.player.muted = true;
+						this.volume = 0;
+					}
+				}
+			},
+			updateVolume(type) {
+				if(this.isPlaying) {
+					if(type == "decrease") {
+						if(this.player.volume.toFixed(1) > 0) {
+							this.player.volume = Number(this.player.volume) - Number(0.1);
+							this.volume = this.player.volume.toFixed(1);
+							this.player.muted = false;
+						}
+					} else if(type == "increase") {
+						if(this.player.volume.toFixed(1) < 1) {
+							this.player.volume = Number(this.player.volume) + Number(0.1);
+							this.volume = this.player.volume.toFixed(1);
+							this.player.muted = false;
+						}
+					} else {
+						this.player.volume = this.volume;
+						this.player.muted = false;
+					}
+				}
+			},
+			seek() {
+				if(this.player.src) {
+					this.player.currentTime = this.playingTime;
+					this.convertedPlayingTime = this.convertTime(this.playingTime);
+				}
 			},
 			updateStatuses(type) {
 				var statuses = document.querySelectorAll(".songStatus");
@@ -139,13 +214,6 @@
 					currentStatus.classList.add("fa-pause");
 				}
 			},
-			changeVolume() {
-				if(this.player.muted) {
-					this.player.muted = false;
-				} else {
-					this.player.muted = true;
-				}
-			},
 			convertTime(time) {
 				var hours = Math.floor(time / 3600);
 				if(hours > 0 && hours < 10 ) {
@@ -157,7 +225,7 @@
 				} 
 				var seconds = Math.floor(time % 60);
 				if(seconds < 10) {
-					seconds = "0" + minutes;
+					seconds = "0" + seconds;
 				}
 				var formattedTime = "";
 				if(parseInt(hours) > 0) {
@@ -166,11 +234,6 @@
 					formattedTime = minutes + ':' + seconds;
 				}  
 				return formattedTime;
-			}
-		},
-		watch: {
-			playingTime (value) {
-				this.playingTime = value;
 			}
 		},
 		created() {
@@ -186,7 +249,7 @@
 		margin-bottom: 20px;
         text-align: center;
 	}
-	#playerDiv {
+	#playlist {
         margin: 0 auto;
         max-width: 500px;
 		text-align: center;
@@ -198,41 +261,9 @@
 		padding-top: 30px;
 		padding-bottom: 30px;
 	}
-	button:hover {
-		opacity: 0.8;
-		color: #fff !important;
+	.btn:not(.btn-light) {
+		margin-right: 10px;
 	}
-	.play, .pause {
-		font-size: 20px;
-		padding: 15px 25px;
-		margin: 0px 15px;
-		border-radius: 10px;
-		color: #FFF;
-		background-color: #CC2E5D;
-	}
-	.forward, .backward {
-		font-size: 16px;
-		padding: 10px 20px;
-		margin: 0px 15px;
-		border-radius: 10px;
-		color: #FFF;
-		background-color: #FF5858;
-	}
-.playlist .song {
-  display: block;
-  width: 100%;
-  padding: 15px;
-  font-size: 20px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.playlist .song:hover {
-  color: #FF5858;
-}
-.playlist .song.playing {
-  color: #FFF;
-  background-image: linear-gradient(to right, #CC2E5D, #FF5858);
-}
 	.artist {
         margin-left: 5px;
     }

@@ -34,7 +34,7 @@
         },
         methods: {
             getArtists() {
-                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getArtists").then(response => {
+                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/getArtists").then(response => {
                     this.artists = response.data.artists;
                 }).catch(error => console.log(error));
             },

@@ -82,7 +82,7 @@
         },
         methods: {
             getArtists() {
-                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/getArtists").then(response => {
+                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/getArtists").then(response => {
                     this.artists = response.data.artists;
                 }).catch(error => console.log(error));
             },
@@ -105,7 +105,7 @@
                     return;
                 }
                 var body = {name: this.artist.name, folder: this.artist.folder};
-                axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/createArtist", body).then(response => {
+                axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/createArtist", body).then(response => {
                     if(response.data.created) {
                         var newArtist = response.data.artist;
                         this.artists = [...this.artists, newArtist];
@@ -139,7 +139,7 @@
             editArtist(updatedArtist) {
                 if(updatedArtist.name != "") {
                     var body = {artistId: updatedArtist._id, name: updatedArtist.name};
-                    axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/editArtist", body).then(response => {
+                    axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/editArtist", body).then(response => {
                         if(response.data.edited) {
                             this.artists = this.artists.map(artist => artist._id == updatedArtist._id ? updatedArtist : artist);
                             this.editing = null;
@@ -150,7 +150,7 @@
                 }
             },
             deleteArtist(artistId) {
-                axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_PORT + "/deleteArtist/" + artistId).then(response => {
+                axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/deleteArtist/" + artistId).then(response => {
                     if(response.data.deleted) {
                         this.artists = this.artists.filter(artist => artist._id != artistId);
                     }
