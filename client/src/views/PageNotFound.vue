@@ -14,7 +14,7 @@
     export default {
         name: "pageNotFound",
         methods: {
-            openPlayer() {
+            openHome() {
                 this.$router.push("/home");
             }
         }

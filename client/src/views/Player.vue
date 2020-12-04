@@ -33,18 +33,19 @@
 				<button type="button" class="btn btn-info" v-if="volume > 0" @click="mute()"><i class="fas fa-volume-mute"></i></button>
 				<button type="button" class="btn btn-info" v-else @click="mute()"><i class="fas fa-volume-up"></i></button>
 				<button type="button" class="btn btn-light" @click="updateVolume('decrease')"><i class="fas fa-minus"></i></button>
-				<input type="range" min="0" max="1" step="0.1" v-model="volume" @input="updateVolume('')">
+				<input type="range" id="volumeBar" min="0" max="1" step="0.1" v-model="volume" @input="updateVolume('')">
 				<button type="button" class="btn btn-light" @click="updateVolume('increase')"><i class="fas fa-plus"></i></button>
 			</div>
-			<div class="controls">
-				<input type="range" min="0" :max="duration" v-model="playingTime" @input="seek()">
-				{{convertedPlayingTime}} / {{convertedDuration}}
+			<div class="playingBar">
+				<input type="range" id="playingBar" min="0" :max="duration" v-model="playingTime" @input="seek()">
+				<b>{{convertedPlayingTime}} / {{convertedDuration}}</b>
 			</div>
 			<div>
 				<h2>{{artist}}</h2>
 				<ul class="list-group">
-					<li v-for="song in songs" :key="song.id" class="list-group-item" @click="play(song)">
-						<b><i :id="'i_' + song.id" class="songStatus fas fa-play"></i><span class="artist">{{song.title}}</span></b>
+					<li v-for="song in songs" :key="song.id" class="list-group-item d-flex justify-content-between align-items-center">
+						<div @click="play(song)"><b><i :id="'i_' + song.id" class="songStatus fas fa-play"></i><span class="artist">{{song.title}}</span></b></div>
+						<a class="btn btn-primary" :href="require('../assets/songs/' + song.path)" role="button" download><i class="fas fa-download"></i></a>
 					</li>
 				</ul>
 			</div>
@@ -89,6 +90,7 @@
 							songObject["id"] = song._id;
 							songObject["title"] = song.title;
 							songObject["artist"] = song.artistName;
+							songObject["path"] = song.path;
 							songObject["src"] = require("../assets/songs/" + song.path);
 							songs.push(songObject);
 						});
@@ -267,4 +269,95 @@
 	.artist {
         margin-left: 5px;
     }
+	.list-group-item {
+        cursor: pointer;
+    }
+	.playingBar {
+		margin-bottom: 10px;
+	}
+	#playingBar {
+		height: 38px;
+		-webkit-appearance: none;
+		width: 100%;
+	}
+	#playingBar:focus {
+		outline: none;
+	}
+	#playingBar::-webkit-slider-runnable-track {
+		width: 100%;
+		height: 10px;
+		cursor: pointer;
+		box-shadow: 1px 1px 1px #000000;
+		background: #3071A9;
+		border-radius: 5px;
+		border: 1px solid #000000;
+	}
+	#playingBar::-webkit-slider-thumb {
+		box-shadow: 1px 1px 1px #000000;
+		border: 1px solid #000000;
+		height: 30px;
+		width: 15px;
+		border-radius: 5px;
+		background: #FFFFFF;
+		cursor: pointer;
+		-webkit-appearance: none;
+		margin-top: -11px;
+	}
+	#playingBar:focus::-webkit-slider-runnable-track {
+		background: #3071A9;
+	}
+	#playingBar::-moz-range-track {
+		width: 100%;
+		height: 10px;
+		cursor: pointer;
+		box-shadow: 1px 1px 1px #000000;
+		background: #3071A9;
+		border-radius: 5px;
+		border: 1px solid #000000;
+	}
+	#playingBar::-moz-range-thumb {
+		box-shadow: 1px 1px 1px #000000;
+		border: 1px solid #000000;
+		height: 30px;
+		width: 15px;
+		border-radius: 5px;
+		background: #FFFFFF;
+		cursor: pointer;
+	}
+	#playingBar::-ms-track {
+		width: 100%;
+		height: 10px;
+		cursor: pointer;
+		background: transparent;
+		border-color: transparent;
+		color: transparent;
+	}
+	#playingBar::-ms-fill-lower {
+		background: #3071A9;
+		border: 1px solid #000000;
+		border-radius: 10px;
+		box-shadow: 1px 1px 1px #000000;
+	}
+	#playingBar::-ms-fill-upper {
+		background: #3071A9;
+		border: 1px solid #000000;
+		border-radius: 10px;
+		box-shadow: 1px 1px 1px #000000;
+	}
+	#playingBar::-ms-thumb {
+		margin-top: 1px;
+		box-shadow: 1px 1px 1px #000000;
+		border: 1px solid #000000;
+		height: 30px;
+		width: 15px;
+		border-radius: 5px;
+		background: #FFFFFF;
+		cursor: pointer;
+	}
+	#playingBar:focus::-ms-fill-lower {
+		background: #3071A9;
+	}
+	#playingBar:focus::-ms-fill-upper {
+		background: #3071A9;
+	}
 </style>
