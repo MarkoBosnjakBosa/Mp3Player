@@ -21,7 +21,7 @@
                 </div>
 			</div>
             <div v-if="songUploaded" class="form-group uploadSuccessful">Your song has been successfully uploaded!</div>
-			<div class="form-group">
+			<div class="form-group formButtons">
 				<button type="submit" class="btn btn-primary">Upload</button>
 				<button type="button" class="btn btn-danger resetForm" @click="resetForm()">Reset</button>
 			</div>
@@ -45,7 +45,8 @@
 					<td colspan="6" class="noSongs">No songs found!</td>
 				</tr>
 				<tr v-for="(song, index) in filterByArtist" :key="song._id">
-					<th scope="row">{{++index}}</th>
+					<th v-if="editing == song._id" scope="row" class="padded">{{++index}}</th>
+                    <th v-else scope="row">{{++index}}</th>
 					<td v-if="editing == song._id"><input type="text" class="form-control" v-model="song.title"/></td>
 					<td v-else>{{song.title}}</td>
 					<td v-if="editing == song._id" class="padded">{{song.artistName}}</td>
@@ -127,8 +128,9 @@
                         var newSong = response.data.song;
                         this.songs = [...this.songs, newSong];
                         this.songUploaded = true;
-                        this.$refs.first.focus();
-                        this.song = {artistId: "", file: ""};
+						this.song = {artistId: "", file: ""};
+						document.getElementById("file").value = "";
+						document.getElementById("fileName").textContent = "Choose a song";
                         this.artistIdError = false, this.fileError = false, this.submitting = false;
                     } else {
                         var errorFields = response.data.errorFields;
@@ -163,7 +165,9 @@
                 }).catch(error => console.log(error));
             },
             resetForm() {
-                this.song = {artistId: "", file: ""};
+				this.song = {artistId: "", file: ""};
+				document.getElementById("file").value = "";
+				document.getElementById("fileName").textContent = "Choose a song";
                 this.artistIdError = false, this.fileError = false, this.songUploaded = false, this.submitting = false;
             },
             clearArtistIdStatus() { this.artistIdError = false; },
@@ -191,7 +195,7 @@
 					return this.songs;
 				}
             },
-            invalidArtistId() { return this.song.artist === ""; },
+            invalidArtistId() { return this.song.artistId === ""; },
             invalidFile() { return this.song.file === ""; }
 		},
         created() {
@@ -272,12 +276,16 @@
 	.noSongs {
         text-align: center;
     }
+	.formButtons {
+		margin-top: -10px;
+	}
 	.resetForm {
 		margin-left: 10px;
 	}
 	.uploadSuccessful {
 		color: #008000;
-		margin-bottom: 10px;
+		margin-bottom: 20px;
+		margin-top: -20px;
 	}
 	.errorField {
 		border: 1px solid #ff0000;

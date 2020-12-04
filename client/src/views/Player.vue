@@ -245,7 +245,7 @@
 	}
 </script>
 
-<style>
+<style scoped>
 	.playerIcon {
 		margin-top: 20px;
 		margin-bottom: 20px;

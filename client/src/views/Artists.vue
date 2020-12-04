@@ -11,7 +11,12 @@
                     <small v-if="nameError && submitting" class="form-text errorInput">Please provide a valid name!</small>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="folder" class="form-control" :class="{'errorField' : folderError && submitting}" placeholder="Folder" v-model="artist.folder" @focus="clearFolderStatus()" @keypress="clearFolderStatus()"/>
+                    <div class="input-group">
+                        <input type="text" id="folder" class="form-control" :class="{'errorField' : folderError && submitting}" placeholder="Folder" v-model="artist.folder" @focus="clearFolderStatus()" @keypress="clearFolderStatus()"/>
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-light" :class="{'errorIcon' : folderError && submitting}" data-toggle="tooltip" title="Folder has to have lower case characters (letters, numbers, underscore and dot)."><i class="fa fa-question"></i></button>
+                        </div>
+                    </div>
                     <small v-if="folderError && submitting" class="form-text errorInput">Please provide a valid folder!</small>
                 </div>
                 <div v-if="alreadyExists == 'name'" class="form-group creationFailed">The name already exists!</div>
@@ -35,7 +40,8 @@
                     <td colspan="6" class="noArtists">No artists found!</td>
                 </tr>
                 <tr v-for="(artist, index) in artists" :key="artist._id">
-                    <th scope="row">{{++index}}</th>
+                    <th v-if="editing == artist._id" scope="row" class="padded">{{++index}}</th>
+                    <th v-else scope="row">{{++index}}</th>
                     <td v-if="editing == artist._id"><input type="text" class="form-control" v-model="artist.name"/></td>
                     <td v-else>{{artist.name}}</td>
                     <td v-if="editing == artist._id" class="padded">{{artist.folder}}</td>
@@ -228,6 +234,11 @@
         border: 1px solid #ff0000;
         box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 6px #ff8080;
     }
+    .errorIcon {
+		border: 1px solid #ff0000;
+		border-left: 0px;
+		box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 6px #ff8080;
+	}
     .errorInput {
         color: #ff0000;
     }
