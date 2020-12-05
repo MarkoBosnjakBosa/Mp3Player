@@ -119,7 +119,7 @@
                         this.$refs.first.focus();
                         this.artist = {name: "", folder: ""};
                         this.alreadyExists = "";
-                        this.nameError = false, this.folderError = false, this.publicSubmitting = false;
+                        this.nameError = false, this.folderError = false, this.submitting = false;
                     } else {
 						if(response.data.alreadyExists) {
 							this.alreadyExists = response.data.field;
@@ -135,6 +135,7 @@
                 }).catch(error => console.log(error));
             },
             enableEditing(artist) {
+                if(this.editing != null) return;
                 this.cachedArtist = Object.assign({}, artist);
                 this.editing = artist._id;
             },
@@ -151,8 +152,6 @@
                             this.editing = null;
                         }
                     }).catch(error => console.log(error));
-                } else {
-                    return;
                 }
             },
             deleteArtist(artistId) {
@@ -175,10 +174,8 @@
 			invalidFolder() { 
                 var folderFormat = /^[a-z0-9_.]*$/;
 				if(this.artist.folder != "" && folderFormat.test(this.artist.folder)) {
-                    console.log(1);
 					return false;
 				} else {
-                    console.log(2);
 					return true;
                 }
             }

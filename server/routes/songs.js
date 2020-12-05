@@ -11,14 +11,14 @@ module.exports = function(app, models, multer, fs, async) {
 	});
 	app.get("/getSongsByArtist/:artistId", (request, response) => {
 		var artistId = request.params.artistId;
-		var artistQuery = {_id: artistId};
-		var songsQuery = {artistId: artistId};
 		var queries = [];
+		var artistQuery = {_id: artistId};
 		queries.push(function(callback) {
 			Artist.findOne(artistQuery).then(artist => {
 				callback(null, artist);
 			}).catch(error => console.log(error));
 		});
+		var songsQuery = {artistId: artistId};
 		queries.push(function(callback) {
 			Song.find(songsQuery).then(songs => {
 				callback(null, songs);

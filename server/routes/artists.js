@@ -1,5 +1,6 @@
-module.exports = function(app, models, fs) {
+module.exports = function(app, models, fs, async) {
 	const Artist = models.Artist;
+	const Song = models.Song;
 	const folderPath = "../client/src/assets/songs/";
 	app.get("/getArtists", (request, response) => {
 		var query = {};
@@ -55,7 +56,7 @@ module.exports = function(app, models, fs) {
         if(artistId && name) {
             var query = {_id: artistId};
             var update = {name: name};
-            Artist.findOneAndUpdate(query, update).then(artist => {
+            Artist.findOneAndUpdate(query, update, {new: true}).then(artist => {
                 if(!isEmpty(artist)) {
                     response.status(200).json({edited: true});
                     response.end();
@@ -72,12 +73,27 @@ module.exports = function(app, models, fs) {
     app.delete("/deleteArtist/:artistId", (request, response) => {
         var artistId = request.params.artistId;
         if(artistId) {
-			var query = {_id: artistId};
-            Artist.findOneAndRemove(query).then(artist => {
-                if(!isEmpty(artist)) {
-                    if(fs.existsSync(folderPath + artist.folder)) {
-                        fs.rmdirSync(folderPath + artist.folder);
-                    }
+			var queries = [];
+			var artistQuery = {_id: artistId};
+			queries.push(function(callback) {
+                Artist.findOneAndRemove(artistQuery).then(artist => {
+                    if(!isEmpty(artist)) {
+						if(fs.existsSync(folderPath + artist.folder)) {
+							fs.rmdirSync(folderPath + artist.folder, {recursive: true});
+						}
+					}
+                    callback(null, artist);
+                }).catch(error => console.log(error));
+			});
+			var songsQuery = {artistId: artistId};
+			queries.push(function(callback) {
+                Song.deleteMany(songsQuery).then(songs => {
+                    callback(null, songs);
+                }).catch(error => console.log(error));
+            });
+			async.parallel(queries).then(results => {
+                var artistResult = results[0];
+                if(!isEmpty(artistResult)) {
                     response.status(200).json({deleted: true});
                     response.end();
                 } else {
