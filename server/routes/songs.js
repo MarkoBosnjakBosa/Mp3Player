@@ -118,7 +118,7 @@ module.exports = function(app, models, multer, fs, async) {
             var query = {_id: songId};
             Song.findOneAndRemove(query).then(song => {
                 if(!isEmpty(song)) {
-					fs.unlink(song.path, function(error) {});
+					fs.unlink(folderPath + song.path, function(error) {});
                     response.status(200).json({deleted: true});
                     response.end();
                 } else {

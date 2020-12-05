@@ -59,6 +59,7 @@
 						<i class="fas fa-pencil-alt" @click="enableEditing(song)"></i>
 						<i class="fas fa-trash" @click="deleteSong(song._id)"></i>
 					</td>
+					<td></td>
 				</tr>
 			</tbody>
 		</table>
@@ -141,6 +142,7 @@
                 }).catch(error => console.log(error));
 			},
 			enableEditing(song) {
+				if(this.editing != null) return;
                 this.cachedSong = Object.assign({}, song);
                 this.editing = song._id;
             },
