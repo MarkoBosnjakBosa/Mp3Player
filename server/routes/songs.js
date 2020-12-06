@@ -4,7 +4,7 @@ module.exports = function(app, models, multer, fs, async) {
 	const folderPath = "../client/src/assets/songs/";
 	app.get("/getSongs", (request, response) => {
 		var query = {};
-        Song.find(query).then(songs => {
+		Song.find(query).then(songs => {
 			response.status(200).json({songs: songs});
 			response.end();
 		}).catch(error => console.log(error));
@@ -55,8 +55,8 @@ module.exports = function(app, models, multer, fs, async) {
 				return callback(null, false, request.extensionValidationError);
 			}
 		}
-    });
-    app.post("/uploadSong", upload.single("file"), (request, response) => {
+	});
+	app.post("/uploadSong", upload.single("file"), (request, response) => {
 		var allowUpload = true;
 		var errorFields = [];
 		var artistId = request.body.artistId;
@@ -91,48 +91,48 @@ module.exports = function(app, models, multer, fs, async) {
 			response.status(200).json({uploaded: false, errorFields: errorFields});
 			response.end();
 		}
-    });
-    app.put("/editSong", (request, response) => {
-        var songId = request.body.songId;
-        var title = request.body.title;
-        if(songId && title) {
-            var query = {_id: songId};
-            var update = {title: title};
-            Song.findOneAndUpdate(query, update, {new: true}).then(song => {
-                if(!isEmpty(song)) {
-                    response.status(200).json({edited: true});
-                    response.end();
-                } else {
-                    response.status(200).json({edited: false});
-                    response.end();
-                }
-            }).catch(error => console.log(error));
-        } else {
-            response.status(200).json({edited: false});
-            response.end();
-        }
-    });
-    app.delete("/deleteSong/:songId", (request, response) => {
-        var songId = request.params.songId;
-        if(songId) {
-            var query = {_id: songId};
-            Song.findOneAndRemove(query).then(song => {
-                if(!isEmpty(song)) {
+	});
+	app.put("/editSong", (request, response) => {
+		var songId = request.body.songId;
+		var title = request.body.title;
+		if(songId && title) {
+			var query = {_id: songId};
+			var update = {title: title};
+			Song.findOneAndUpdate(query, update, {new: true}).then(song => {
+				if(!isEmpty(song)) {
+					response.status(200).json({edited: true});
+					response.end();
+				} else {
+					response.status(200).json({edited: false});
+					response.end();
+				}
+			}).catch(error => console.log(error));
+		} else {
+			response.status(200).json({edited: false});
+			response.end();
+		}
+	});
+	app.delete("/deleteSong/:songId", (request, response) => {
+		var songId = request.params.songId;
+		if(songId) {
+			var query = {_id: songId};
+			Song.findOneAndRemove(query).then(song => {
+				if(!isEmpty(song)) {
 					fs.unlink(folderPath + song.path, function(error) {});
-                    response.status(200).json({deleted: true});
-                    response.end();
-                } else {
-                    response.status(200).json({deleted: false});
-                    response.end();
-                }
-            }).catch(error => console.log(error));
-        } else {
-            response.status(200).json({deleted: false});
-            response.end();
-        }
-    });
-    
-    function getSongScheme(Song, title, artistId, artistName, path, fileName) {
+					response.status(200).json({deleted: true});
+					response.end();
+				} else {
+					response.status(200).json({deleted: false});
+					response.end();
+				}
+			}).catch(error => console.log(error));
+		} else {
+			response.status(200).json({deleted: false});
+			response.end();
+		}
+	});
+
+	function getSongScheme(Song, title, artistId, artistName, path, fileName) {
 		return new Song({title: title, artistId: artistId, artistName: artistName, path: path, fileName: fileName});
 	}
 	function isEmpty(object) {
