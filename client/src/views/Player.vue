@@ -97,20 +97,22 @@
 						this.songs = songs;
 						this.current = this.songs[this.index];
 					}
-					var player = this.$refs.player;
-					var temp = this;
-					player.addEventListener("loadedmetadata", function() {
-						temp.duration = player.duration;
-						temp.convertedDuration = temp.convertTime(player.duration);
-					}.bind(this));
-					player.addEventListener("timeupdate", function() {
-						temp.playingTime = this.currentTime;
-						temp.convertedPlayingTime = temp.convertTime(this.currentTime);
-					});
-					player.addEventListener("ended", function() {
-						this.forward();
-					}.bind(this));
-                }).catch(error => console.log(error));
+				});
+			},
+			getPlayer() {
+				var player = this.$refs.player;
+				var temp = this;
+				player.addEventListener("loadedmetadata", function() {
+					temp.duration = player.duration;
+					temp.convertedDuration = temp.convertTime(player.duration);
+				}.bind(this));
+				player.addEventListener("timeupdate", function() {
+					temp.playingTime = this.currentTime;
+					temp.convertedPlayingTime = temp.convertTime(this.currentTime);
+				});
+				player.addEventListener("ended", function() {
+					this.forward();
+				}.bind(this));
 			},
 			play(song, index) {
 				var player = this.$refs.player;
@@ -250,6 +252,9 @@
 				}  
 				return formattedTime;
 			}
+		},
+		mounted() {
+			this.getPlayer();
 		},
 		created() {
 			this.artistId = this.$route.params.artistId;
