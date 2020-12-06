@@ -132,13 +132,13 @@
 				var playerPromise = player.play();
 				if(typeof playerPromise != "undefined") {
 					playerPromise.then(() => {
-						this.addSongInformation();
+						this.updateSongInformation();
 					}).catch(() => {
-						this.addSongInformation();
+						this.updateSongInformation();
 					});
 				}
 			},
-			addSongInformation() {
+			updateSongInformation() {
 				var player = this.$refs.player;
 				if(this.volume < 0.1) {	
 					this.volume = player.volume;
@@ -208,8 +208,11 @@
 					if(player.volume.toFixed(1) < 1) {
 						player.volume = Number(player.volume) + Number(0.1);
 						this.volume = player.volume.toFixed(1);
-						player.muted = false;
+					} else {
+						player.volume = 1;
+						this.volume = 1;
 					}
+					player.muted = false;
 				} else {
 					player.volume = this.volume;
 					player.muted = false;
