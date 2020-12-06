@@ -2,32 +2,32 @@
 	<div id="songs" class="container-fluid">
 		<navigation></navigation>
 		<div class="songsIcon">
-            <i class="fas fa-music fa-7x"></i>
-        </div>
+			<i class="fas fa-music fa-7x"></i>
+		</div>
 		<div id="songsForm">
-            <form autocomplete="off" @submit.prevent="uploadSong()" enctype="multipart/form-data">
-			<div class="form-row">
-				<div class="form-group col-md-6">
-					<select id="artist" class="form-control" :class="{'errorField' : artistIdError && submitting}" v-model="song.artistId" @focus="clearArtistIdStatus()" @keypress="clearArtistIdStatus()">
-						<option value="" disabled selected>Select artist...</option>
-						<option v-for="artist in artists" :key="artist._id" :value="artist._id">{{artist.name}}</option>
-					</select>
-                    <small v-if="artistIdError && submitting" class="form-text errorInput">Please provide a valid artist!</small>
+			<form autocomplete="off" @submit.prevent="uploadSong()" enctype="multipart/form-data">
+				<div class="form-row">
+					<div class="form-group col-md-6">
+						<select id="artist" class="form-control" :class="{'errorField' : artistIdError && submitting}" v-model="song.artistId" @focus="clearArtistIdStatus()" @keypress="clearArtistIdStatus()">
+							<option value="" disabled selected>Select artist...</option>
+							<option v-for="artist in artists" :key="artist._id" :value="artist._id">{{artist.name}}</option>
+						</select>
+						<small v-if="artistIdError && submitting" class="form-text errorInput">Please provide a valid artist!</small>
+					</div>
+					<div class="form-group col-md-6">
+						<input type="file" id="file" class="inputFile" @change="selectFile($event)"/>
+						<label for="file"><i class="fas fa-music"></i><span id="fileName">Choose a song</span></label>
+						<small v-if="fileError && submitting" class="form-text errorInput fileError">Please provide a valid file!</small>				
+					</div>
 				</div>
-                <div class="form-group col-md-6">
-					<input type="file" id="file" class="inputFile" @change="selectFile($event)"/>
-					<label for="file"><i class="fas fa-music"></i><span id="fileName">Choose a song</span></label>
-                    <small v-if="fileError && submitting" class="form-text errorInput fileError">Please provide a valid file!</small>				
-                </div>
-			</div>
-            <div v-if="songUploaded" class="form-group uploadSuccessful">Your song has been successfully uploaded!</div>
-			<div class="form-group formButtons">
-				<button type="submit" class="btn btn-primary">Upload</button>
-				<button type="button" class="btn btn-danger resetForm" @click="resetForm()">Reset</button>
-			</div>
-		</form>
-        </div>
-        <table id="songsTable" class="table">
+				<div v-if="songUploaded" class="form-group uploadSuccessful">Your song has been successfully uploaded!</div>
+				<div class="form-group formButtons">
+					<button type="submit" class="btn btn-primary">Upload</button>
+					<button type="button" class="btn btn-danger resetForm" @click="resetForm()">Reset</button>
+				</div>
+			</form>
+		</div>
+		<table id="songsTable" class="table">
 			<thead>
 				<th scope="col">#</th>
 				<th scope="col">Title</th>
@@ -46,7 +46,7 @@
 				</tr>
 				<tr v-for="(song, index) in filterByArtist" :key="song._id">
 					<th v-if="editing == song._id" scope="row" class="padded">{{++index}}</th>
-                    <th v-else scope="row">{{++index}}</th>
+					<th v-else scope="row">{{++index}}</th>
 					<td v-if="editing == song._id"><input type="text" class="form-control" v-model="song.title"/></td>
 					<td v-else>{{song.title}}</td>
 					<td v-if="editing == song._id" class="padded">{{song.artistName}}</td>
@@ -70,44 +70,44 @@
 	import "bootstrap";
 	import "bootstrap/dist/css/bootstrap.min.css";
 	import Navigation from "@/components/Navigation.vue"; 
-    var axios = require("axios");
-    
+	var axios = require("axios");
+
 	export default {
 		name: "songs",
 		components: {
 			Navigation
 		},
-        data() {
-            return {
-                songs: [],
-                artists: [],
-                submitting: false,
-                artistIdError: false,
-                fileError: false,
-                song: {
-                    artistId: "",
-                    file: ""
-                },
-                songUploaded: false,
-                filter: "all",
-                editing: null
-            }
-        },
-        methods: {
-            getSongs() {
-                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/getSongs").then(response => {
-                    this.songs = response.data.songs;
-                }).catch(error => console.log(error));
-            },
-            getArtists() {
-                axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/getArtists").then(response => {
-                    this.artists = response.data.artists;
-                }).catch(error => console.log(error));
-            },
-            uploadSong() {
-                this.submitting = true;
-                this.clearArtistIdStatus();
-                this.clearFileStatus();
+		data() {
+			return {
+				songs: [],
+				artists: [],
+				submitting: false,
+				artistIdError: false,
+				fileError: false,
+				song: {
+					artistId: "",
+					file: ""
+				},
+				songUploaded: false,
+				filter: "all",
+				editing: null
+			}
+		},
+		methods: {
+			getSongs() {
+				axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/getSongs").then(response => {
+					this.songs = response.data.songs;
+				}).catch(error => console.log(error));
+			},
+			getArtists() {
+				axios.get(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/getArtists").then(response => {
+					this.artists = response.data.artists;
+				}).catch(error => console.log(error));
+			},
+			uploadSong() {
+				this.submitting = true;
+				this.clearArtistIdStatus();
+				this.clearFileStatus();
 				var allowUpload = true;
 				if(this.invalidArtistId) {
 					this.artistIdError = true;
@@ -118,61 +118,61 @@
 					allowUpload = false;
 				}
 				if(!allowUpload) {
-                    this.songUploaded = false;
+					this.songUploaded = false;
 					return;
 				}
 				var formData = new FormData();
 				formData.append("artistId", this.song.artistId);
 				formData.append("file", this.song.file);
-                axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/uploadSong", formData).then(response => {
-                    if(response.data.uploaded) {
-                        var newSong = response.data.song;
-                        this.songs = [...this.songs, newSong];
-                        this.songUploaded = true;
+				axios.post(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/uploadSong", formData).then(response => {
+					if(response.data.uploaded) {
+						var newSong = response.data.song;
+						this.songs = [...this.songs, newSong];
+						this.songUploaded = true;
 						this.song = {artistId: "", file: ""};
 						document.getElementById("file").value = "";
 						document.getElementById("fileName").textContent = "Choose a song";
-                        this.artistIdError = false, this.fileError = false, this.submitting = false;
-                    } else {
-                        var errorFields = response.data.errorFields;
-                        if(errorFields.includes("artistId")) this.artistIdError = true;
-                        if(errorFields.includes("file")) this.fileError = true;
-                        this.songUploaded = false;
-                    }
-                }).catch(error => console.log(error));
+						this.artistIdError = false, this.fileError = false, this.submitting = false;
+					} else {
+						var errorFields = response.data.errorFields;
+						if(errorFields.includes("artistId")) this.artistIdError = true;
+						if(errorFields.includes("file")) this.fileError = true;
+						this.songUploaded = false;
+					}
+				}).catch(error => console.log(error));
 			},
 			enableEditing(song) {
 				if(this.editing != null) return;
-                this.cachedSong = Object.assign({}, song);
-                this.editing = song._id;
-            },
-            disableEditing(song) {
-                Object.assign(song, this.cachedSong);
-                this.editing = null;
-            },
-            editSong(updatedSong) {
-                var body = {songId: updatedSong._id, title: updatedSong.title};
-                axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/editSong", body).then(response => {
-                    if(response.data.edited) {
+				this.cachedSong = Object.assign({}, song);
+				this.editing = song._id;
+			},
+			disableEditing(song) {
+				Object.assign(song, this.cachedSong);
+				this.editing = null;
+			},
+			editSong(updatedSong) {
+				var body = {songId: updatedSong._id, title: updatedSong.title};
+				axios.put(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/editSong", body).then(response => {
+					if(response.data.edited) {
 						this.songs = this.songs.map(song => song._id == updatedSong._id ? updatedSong : song);
 						this.editing = null;
-                    }
-                }).catch(error => console.log(error));
-            },
-            deleteSong(songId) {
-                axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/deleteSong/" + songId).then(response => {
-                    if(response.data.deleted) {
-                        this.songs = this.songs.filter(song => song._id != songId);
-                    }
-                }).catch(error => console.log(error));
-            },
-            resetForm() {
+					}
+				}).catch(error => console.log(error));
+			},
+			deleteSong(songId) {
+				axios.delete(process.env.VUE_APP_BASE_URL + process.env.VUE_APP_SERVER_PORT + "/deleteSong/" + songId).then(response => {
+					if(response.data.deleted) {
+						this.songs = this.songs.filter(song => song._id != songId);
+					}
+				}).catch(error => console.log(error));
+			},
+			resetForm() {
 				this.song = {artistId: "", file: ""};
 				document.getElementById("file").value = "";
 				document.getElementById("fileName").textContent = "Choose a song";
-                this.artistIdError = false, this.fileError = false, this.songUploaded = false, this.submitting = false;
-            },
-            clearArtistIdStatus() { this.artistIdError = false; },
+				this.artistIdError = false, this.fileError = false, this.songUploaded = false, this.submitting = false;
+			},
+			clearArtistIdStatus() { this.artistIdError = false; },
 			clearFileStatus() { this.fileError = false; },
 			selectFile(event) {
 				var files = event.target.files;
@@ -187,33 +187,33 @@
 				} else {
 					this.fileError = true;
 				}
-			},
-        },
-        computed: {
+			}
+		},
+		computed: {
 			filterByArtist() {
 				if(this.filter != "all") {
 					return this.songs.filter(song => song.artistId == this.filter);
 				} else {
 					return this.songs;
 				}
-            },
-            invalidArtistId() { return this.song.artistId === ""; },
-            invalidFile() { return this.song.file === ""; }
+			},
+			invalidArtistId() { return this.song.artistId === ""; },
+			invalidFile() { return this.song.file === ""; }
 		},
-        created() {
-            this.getSongs();
-            this.getArtists();
-        }
-    }
+		created() {
+			this.getSongs();
+			this.getArtists();
+		}
+	}
 </script>
 
 <style scoped>
 	.songsIcon {
 		margin-top: 20px;
 		margin-bottom: 20px;
-        text-align: center;
+		text-align: center;
 	}
-    #songsForm {
+	#songsForm {
 		max-width: 800px;
 		margin: 0 auto;
 		margin-bottom: 20px;
@@ -259,25 +259,25 @@
 		margin-top: -10px;
 	}
 	#songsTable {
-        margin: 0 auto;
-        max-width: 1000px;
-    }
+		margin: 0 auto;
+		max-width: 1000px;
+	}
 	tbody .fas, tbody .far {
-        cursor: pointer;
-        margin-right: 5px;
-    }
-    .padded {
-        padding-top: 20px;
-    }
-    .editSong {
-        color: #008000;
-    }
-    .disableEditing {
-        color: #ff0000;
-    }
+		cursor: pointer;
+		margin-right: 5px;
+	}
+	.padded {
+		padding-top: 20px;
+	}
+	.editSong {
+		color: #008000;
+	}
+	.disableEditing {
+		color: #ff0000;
+	}
 	.noSongs {
-        text-align: center;
-    }
+		text-align: center;
+	}
 	.formButtons {
 		margin-top: -10px;
 	}
