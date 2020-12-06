@@ -219,7 +219,7 @@
 			},
 			seek() {
 				var player = this.$refs.player;
-				if(player.src && this.isPlaying) {
+				if(player.src) {
 					player.currentTime = this.playingTime;
 					this.convertedPlayingTime = this.convertTime(this.playingTime);
 				}
