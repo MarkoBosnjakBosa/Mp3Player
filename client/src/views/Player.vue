@@ -158,6 +158,14 @@
 				this.isPlaying = false;
 				this.updateStatuses("pause");
 			},
+			backward() {
+				this.index--;
+				if(this.index < 0) {
+					this.index = this.songs.length - 1;
+				}
+				this.current = this.songs[this.index];
+				this.play(this.current, this.index);
+			},
 			forward() {
 				this.index++;
 				if(this.index > this.songs.length - 1) {
@@ -165,14 +173,6 @@
 				}
 				this.current = this.songs[this.index];
 				this.play(this.current, this.index);
-			},
-			backward() {
-				this.index--;
-				if(this.index < 0) {
-					this.index = this.songs.length - 1;
-				}
-				this.current = this.songs[this.index];
-				this.play(this.current);
 			},
 			playAgain() {
 				var player = this.$refs.player;
