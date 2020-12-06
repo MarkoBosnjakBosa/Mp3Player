@@ -1,7 +1,7 @@
 <template>
-	<div id="home" class="container-fluid">
-		<navigation></navigation>
-		<div class="homeIcon">
+    <div id="home" class="container-fluid">
+        <navigation></navigation>
+        <div class="homeIcon">
             <i class="fas fa-list fa-7x"></i>
         </div>
         <div id="artistsList">
@@ -17,16 +17,16 @@
 </template>
 
 <script>
-	import "bootstrap";
-	import "bootstrap/dist/css/bootstrap.min.css";
-	import Navigation from "@/components/Navigation.vue"; 
+    import "bootstrap";
+    import "bootstrap/dist/css/bootstrap.min.css";
+    import Navigation from "@/components/Navigation.vue"; 
     var axios = require("axios");
-    
-	export default {
-		name: "home",
-		components: {
-			Navigation
-		},
+
+    export default {
+        name: "home",
+        components: {
+            Navigation
+        },
         data() {
             return {
                 artists: []
@@ -50,10 +50,10 @@
 
 <style scoped>
     .homeIcon {
-		margin-top: 20px;
-		margin-bottom: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
         text-align: center;
-	}
+    }
     #artistsList {
         margin: 0 auto;
         max-width: 500px;
