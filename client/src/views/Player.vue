@@ -197,7 +197,6 @@
 				}
 			},
 			updateVolume(type) {
-				if(this.isPlaying) {
 					var player = this.$refs.player;
 					if(type == "decrease") {
 						if(player.volume.toFixed(1) > 0) {
@@ -215,7 +214,6 @@
 						player.volume = this.volume;
 						player.muted = false;
 					}
-				}
 			},
 			seek() {
 				var player = this.$refs.player;
