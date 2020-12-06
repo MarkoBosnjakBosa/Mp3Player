@@ -22,33 +22,36 @@
 			<i class="fas fa-headphones fa-7x"></i>
 		</div>
 		<div id="playlist">
-			<h1>{{current.title}}</h1>
-			<div class="controls">
-				<button type="button" class="btn btn-primary" @click="backward()"><i class="fas fa-backward"></i></button>
-				<button type="button" class="btn btn-danger" v-if="!isPlaying" @click="play('', '')"><i class="fas fa-play"></i></button>
-				<button type="button" class="btn btn-danger" v-else @click="pause()"><i class="fas fa-pause"></i></button>
-				<button type="button" class="btn btn-primary" @click="forward()"><i class="fas fa-forward"></i></button>
-				<button type="button" class="btn btn-info" v-if="!playingAgain" @click="playAgain()"><i class="fas fa-redo-alt"></i></button>
-				<button type="button" class="btn btn-info" v-else @click="playAgain()"><i class="fas fa-undo-alt"></i></button>
-				<button type="button" class="btn btn-info" v-if="volume > 0" @click="mute()"><i class="fas fa-volume-mute"></i></button>
-				<button type="button" class="btn btn-info" v-else @click="mute()"><i class="fas fa-volume-up"></i></button>
-				<button type="button" class="btn btn-light" @click="updateVolume('decrease')"><i class="fas fa-minus"></i></button>
-				<input type="range" id="volumeBar" min="0" max="1" step="0.1" v-model="volume" @input="updateVolume('')">
-				<button type="button" class="btn btn-light" @click="updateVolume('increase')"><i class="fas fa-plus"></i></button>
-				<audio ref="player" :src="current.src" autoplay></audio> 
-			</div>
-			<div class="playingBar">
-				<input type="range" id="playingBar" min="0" :max="duration" v-model="playingTime" @input="seek()">
-				<b>{{convertedPlayingTime}} / {{convertedDuration}}</b>
-			</div>
-			<div>
-				<h2>{{artist}}</h2>
-				<ul class="list-group">
-					<li v-for="(song, index) in songs" :key="song.id" class="list-group-item d-flex justify-content-between align-items-center">
-						<div class="song" @click="play(song, index)"><b><i :id="'i_' + song.id" class="songStatus fas fa-play"></i><span class="artist">{{song.title}}</span></b></div>
-						<a class="btn btn-primary" :href="require('../assets/songs/' + song.path)" role="button" download><i class="fas fa-download"></i></a>
-					</li>
-				</ul>
+			<audio ref="player" :src="current.src" autoplay></audio> 
+			<div v-if="!songs.length"><b>No songs for this artist found!</b></div>
+			<div v-else>
+				<h1>{{current.title}}</h1>
+				<div class="controls">
+					<button type="button" class="btn btn-primary" @click="backward()"><i class="fas fa-backward"></i></button>
+					<button type="button" class="btn btn-danger" v-if="!isPlaying" @click="play('', '')"><i class="fas fa-play"></i></button>
+					<button type="button" class="btn btn-danger" v-else @click="pause()"><i class="fas fa-pause"></i></button>
+					<button type="button" class="btn btn-primary" @click="forward()"><i class="fas fa-forward"></i></button>
+					<button type="button" class="btn btn-info" v-if="!playingAgain" @click="playAgain()"><i class="fas fa-redo-alt"></i></button>
+					<button type="button" class="btn btn-info" v-else @click="playAgain()"><i class="fas fa-undo-alt"></i></button>
+					<button type="button" class="btn btn-info" v-if="volume > 0" @click="mute()"><i class="fas fa-volume-mute"></i></button>
+					<button type="button" class="btn btn-info" v-else @click="mute()"><i class="fas fa-volume-up"></i></button>
+					<button type="button" class="btn btn-light" @click="updateVolume('decrease')"><i class="fas fa-minus"></i></button>
+					<input type="range" id="volumeBar" min="0" max="1" step="0.1" v-model="volume" @input="updateVolume('')">
+					<button type="button" class="btn btn-light" @click="updateVolume('increase')"><i class="fas fa-plus"></i></button>
+				</div>
+				<div class="playingBar">
+					<input type="range" id="playingBar" min="0" :max="duration" v-model="playingTime" @input="seek()">
+					<b>{{convertedPlayingTime}} / {{convertedDuration}}</b>
+				</div>
+				<div>
+					<h2>{{artist}}</h2>
+					<ul class="list-group">
+						<li v-for="(song, index) in songs" :key="song.id" class="list-group-item d-flex justify-content-between align-items-center">
+							<div class="song" @click="play(song, index)"><b><i :id="'i_' + song.id" class="songStatus fas fa-play"></i><span class="artist">{{song.title}}</span></b></div>
+							<a class="btn btn-primary" :href="require('../assets/songs/' + song.path)" role="button" download><i class="fas fa-download"></i></a>
+						</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -86,16 +89,16 @@
 					var uploadedSongs = response.data.songs;
 					if(uploadedSongs.length) {
 						uploadedSongs.forEach(song => {
-						var songObject = {};
-						songObject["id"] = song._id;
-						songObject["title"] = song.title;
-						songObject["artist"] = song.artistName;
-						songObject["path"] = song.path;
-						songObject["src"] = require("../assets/songs/" + song.path);
-						songs.push(songObject);
-					});
-					this.songs = songs;
-					this.current = this.songs[this.index];
+							var songObject = {};
+							songObject["id"] = song._id;
+							songObject["title"] = song.title;
+							songObject["artist"] = song.artistName;
+							songObject["path"] = song.path;
+							songObject["src"] = require("../assets/songs/" + song.path);
+							songs.push(songObject);
+						});
+						this.songs = songs;
+						this.current = this.songs[this.index];
 					}
 				}).catch(error => console.log(error));
 			},
