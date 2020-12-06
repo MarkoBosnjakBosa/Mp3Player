@@ -22,7 +22,7 @@
 			<i class="fas fa-headphones fa-7x"></i>
 		</div>
 		<div id="playlist">
-			<audio ref="player" :src="current.src" autoplay></audio> 
+			<audio id="audio" ref="player" :src="current.src"></audio>
 			<div v-if="!songs.length"><b>No songs for this artist found!</b></div>
 			<div v-else>
 				<h1>{{current.title}}</h1>
@@ -112,7 +112,6 @@
 				player.addEventListener("timeupdate", function() {
 					temp.playingTime = this.currentTime;
 					temp.convertedPlayingTime = temp.convertTime(this.currentTime);
-					//temp.addSongInformation();
 				});
 				player.addEventListener("ended", function() {
 					this.forward();
@@ -125,6 +124,10 @@
 				}
 				if(index != "") {
 					this.index = index;
+				}
+				var audio = document.getElementById("audio");
+				if(!audio.hasAttribute("autoplay")) {
+					audio.setAttribute("autoplay", "");
 				}
 				var playerPromise = player.play();
 				if(typeof playerPromise != "undefined") {
