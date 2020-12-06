@@ -27,5 +27,5 @@ database.on("open", function() {
 });
 
 app.listen(port, function() {
-    console.log("Tasks app listening on " + baseUrl + port + "!");
+    console.log("Mp3Player app listening on " + baseUrl + port + "!");
 });
