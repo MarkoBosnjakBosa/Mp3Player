@@ -197,23 +197,23 @@
 				}
 			},
 			updateVolume(type) {
-					var player = this.$refs.player;
-					if(type == "decrease") {
-						if(player.volume.toFixed(1) > 0) {
-							player.volume = Number(player.volume) - Number(0.1);
-							this.volume = player.volume.toFixed(1);
-							player.muted = false;
-						}
-					} else if(type == "increase") {
-						if(player.volume.toFixed(1) < 1) {
-							player.volume = Number(player.volume) + Number(0.1);
-							this.volume = player.volume.toFixed(1);
-							player.muted = false;
-						}
-					} else {
-						player.volume = this.volume;
+				var player = this.$refs.player;
+				if(type == "decrease") {
+					if(player.volume.toFixed(1) > 0) {
+						player.volume = Number(player.volume) - Number(0.1);
+						this.volume = player.volume.toFixed(1);
 						player.muted = false;
 					}
+				} else if(type == "increase") {
+					if(player.volume.toFixed(1) < 1) {
+						player.volume = Number(player.volume) + Number(0.1);
+						this.volume = player.volume.toFixed(1);
+						player.muted = false;
+					}
+				} else {
+					player.volume = this.volume;
+					player.muted = false;
+				}
 			},
 			seek() {
 				var player = this.$refs.player;
