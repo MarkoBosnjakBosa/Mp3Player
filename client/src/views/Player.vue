@@ -1,26 +1,26 @@
 <template>
 	<div id="player">
 		<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarOptions" aria-controls="navbarOptions" aria-expanded="false">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div id="navbarOptions" class="collapse navbar-collapse">
-                <ul class="navbar-nav ml-auto mt-2 mt-lg-0 mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" :href="baseUrl + '/home'">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" :href="baseUrl + '/songs'">Songs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" :href="baseUrl + '/artists'">Artists</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+			<button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarOptions" aria-controls="navbarOptions" aria-expanded="false">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div id="navbarOptions" class="collapse navbar-collapse">
+				<ul class="navbar-nav ml-auto mt-2 mt-lg-0 mx-auto">
+					<li class="nav-item">
+						<a class="nav-link" :href="baseUrl + '/home'">Home</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" :href="baseUrl + '/songs'">Songs</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" :href="baseUrl + '/artists'">Artists</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
 		<div class="playerIcon">
-            <i class="fas fa-headphones fa-7x"></i>
-        </div>
+			<i class="fas fa-headphones fa-7x"></i>
+		</div>
 		<div id="playlist">
 			<h1>{{current.title}}</h1>
 			<div class="controls">
@@ -57,7 +57,7 @@
 <script>
 	import "bootstrap";
 	import "bootstrap/dist/css/bootstrap.min.css";
-    var axios = require("axios");
+	var axios = require("axios");
 
 	export default {
 		name: "player",
@@ -86,18 +86,18 @@
 					var uploadedSongs = response.data.songs;
 					if(uploadedSongs.length) {
 						uploadedSongs.forEach(song => {
-							var songObject = {};
-							songObject["id"] = song._id;
-							songObject["title"] = song.title;
-							songObject["artist"] = song.artistName;
-							songObject["path"] = song.path;
-							songObject["src"] = require("../assets/songs/" + song.path);
-							songs.push(songObject);
-						});
-						this.songs = songs;
-						this.current = this.songs[this.index];
+						var songObject = {};
+						songObject["id"] = song._id;
+						songObject["title"] = song.title;
+						songObject["artist"] = song.artistName;
+						songObject["path"] = song.path;
+						songObject["src"] = require("../assets/songs/" + song.path);
+						songs.push(songObject);
+					});
+					this.songs = songs;
+					this.current = this.songs[this.index];
 					}
-				});
+				}).catch(error => console.log(error));
 			},
 			getPlayer() {
 				var player = this.$refs.player;
@@ -267,13 +267,13 @@
 	.playerIcon {
 		margin-top: 20px;
 		margin-bottom: 20px;
-        text-align: center;
+		text-align: center;
 	}
 	#playlist {
-        margin: 0 auto;
-        max-width: 500px;
+		margin: 0 auto;
+		max-width: 500px;
 		text-align: center;
-    }
+	}
 	.controls {
 		display: flex;
 		justify-content: center;
@@ -285,8 +285,8 @@
 		margin-right: 10px;
 	}
 	.artist {
-        margin-left: 5px;
-    }
+		margin-left: 5px;
+	}
 	.song {
 		width: 100%;
 		padding-top: 7px;
