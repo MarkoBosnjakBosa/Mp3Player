@@ -112,6 +112,7 @@
 				player.addEventListener("timeupdate", function() {
 					temp.playingTime = this.currentTime;
 					temp.convertedPlayingTime = temp.convertTime(this.currentTime);
+					temp.addSongInformation();
 				});
 				player.addEventListener("ended", function() {
 					this.forward();
@@ -136,14 +137,18 @@
 			},
 			addSongInformation() {
 				var player = this.$refs.player;
-				if(this.volume < 0.1) {	
-					this.volume = player.volume;
-				} else {
-					player.volume = this.volume;
+				if(player.volume != this.volume) {
+					if(this.volume < 0.1) {	
+						this.volume = player.volume;
+					} else {
+						player.volume = this.volume;
+					}
 				}
-				if(!isNaN(player.duration)) {
-					this.duration = player.duration;
-					this.convertedDuration = this.convertTime(player.duration);
+				if(player.duration != this.duration) {
+					if(!isNaN(player.duration)) {
+						this.duration = player.duration;
+						this.convertedDuration = this.convertTime(player.duration);
+					}
 				}
 				this.isPlaying = true;
 				this.updateStatuses("play");
