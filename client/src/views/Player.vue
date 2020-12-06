@@ -120,7 +120,12 @@
 			play(song, index) {
 				var player = this.$refs.player;
 				if(typeof song.src != "undefined") {
-					this.current = song;
+					if(this.current.src == song.src && this.isPlaying) {
+						this.pause();
+						return;
+					} else {
+						this.current = song;
+					}
 				}
 				if(index != "") {
 					this.index = index;
