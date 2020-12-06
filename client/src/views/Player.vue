@@ -112,7 +112,7 @@
 				player.addEventListener("timeupdate", function() {
 					temp.playingTime = this.currentTime;
 					temp.convertedPlayingTime = temp.convertTime(this.currentTime);
-					temp.addSongInformation();
+					//temp.addSongInformation();
 				});
 				player.addEventListener("ended", function() {
 					this.forward();
@@ -137,18 +137,14 @@
 			},
 			addSongInformation() {
 				var player = this.$refs.player;
-				if(player.volume != this.volume) {
-					if(this.volume < 0.1) {	
-						this.volume = player.volume;
-					} else {
-						player.volume = this.volume;
-					}
+				if(this.volume < 0.1) {	
+					this.volume = player.volume;
+				} else {
+					player.volume = this.volume;
 				}
-				if(player.duration != this.duration) {
-					if(!isNaN(player.duration)) {
-						this.duration = player.duration;
-						this.convertedDuration = this.convertTime(player.duration);
-					}
+				if(!isNaN(player.duration)) {
+					this.duration = player.duration;
+					this.convertedDuration = this.convertTime(player.duration);
 				}
 				this.isPlaying = true;
 				this.updateStatuses("play");
@@ -220,7 +216,7 @@
 			},
 			seek() {
 				var player = this.$refs.player;
-				if(player.src) {
+				if(player.src && this.isPlaying) {
 					player.currentTime = this.playingTime;
 					this.convertedPlayingTime = this.convertTime(this.playingTime);
 				}
