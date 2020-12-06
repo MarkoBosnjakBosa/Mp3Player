@@ -1,5 +1,5 @@
 <template>
-	<div id="artists" class="container-fluid">
+    <div id="artists" class="container-fluid">
         <navigation></navigation>
         <div class="artistsIcon">
             <i class="far fa-folder fa-7x"></i>
@@ -57,20 +57,20 @@
                 </tr>
             </tbody>
         </table>
-	</div>
+    </div>
 </template>
 
 <script>
-	import "bootstrap";
+    import "bootstrap";
     import "bootstrap/dist/css/bootstrap.min.css";
     import Navigation from "@/components/Navigation.vue"; 
     var axios = require("axios");
-    
-	export default {
+
+    export default {
         name: "artists",
         components: {
-			Navigation
-		},
+            Navigation
+        },
         data() {
             return {
                 artists: [],
@@ -121,17 +121,17 @@
                         this.alreadyExists = "";
                         this.nameError = false, this.folderError = false, this.submitting = false;
                     } else {
-						if(response.data.alreadyExists) {
-							this.alreadyExists = response.data.field;
-							this.artistCreated = false;
-						} else {
-							var errorFields = response.data.errorFields;
-							if(errorFields.includes("name")) this.nameError = true;
-							if(errorFields.includes("folder")) this.folderError = true;
-							this.alreadyExists = "";
-							this.artistCreated = false;
-						}
-					}
+                        if(response.data.alreadyExists) {
+                            this.alreadyExists = response.data.field;
+                            this.artistCreated = false;
+                        } else {
+                            var errorFields = response.data.errorFields;
+                            if(errorFields.includes("name")) this.nameError = true;
+                            if(errorFields.includes("folder")) this.folderError = true;
+                            this.alreadyExists = "";
+                            this.artistCreated = false;
+                        }
+                    }
                 }).catch(error => console.log(error));
             },
             enableEditing(artist) {
@@ -164,22 +164,22 @@
             resetForm() {
                 this.artist = {name: "", folder: ""};
                 this.alreadyExists = "";
-				this.nameError = false, this.folderError = false, this.artistCreated = false, this.submitting = false;
+                this.nameError = false, this.folderError = false, this.artistCreated = false, this.submitting = false;
             },
             clearNameStatus() { this.nameError = false; },
-			clearFolderStatus() { this.folderError = false; },
+            clearFolderStatus() { this.folderError = false; },
         },
         computed: {
-			invalidName() { return this.artist.name === ""; },
-			invalidFolder() { 
+            invalidName() { return this.artist.name === ""; },
+            invalidFolder() { 
                 var folderFormat = /^[a-z0-9_.]*$/;
-				if(this.artist.folder != "" && folderFormat.test(this.artist.folder)) {
-					return false;
-				} else {
-					return true;
+                if(this.artist.folder != "" && folderFormat.test(this.artist.folder)) {
+                    return false;
+                } else {
+                    return true;
                 }
             }
-		},
+        },
         created() {
             this.getArtists();
         }
@@ -188,10 +188,10 @@
 
 <style scoped>
     .artistsIcon {
-		margin-top: 20px;
-		margin-bottom: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
         text-align: center;
-	}
+    }
     #artistsForm {
         margin: 0 auto;
         max-width: 500px;
@@ -217,25 +217,25 @@
         text-align: center;
     }
     .resetForm {
-		margin-left: 10px;
-	}
+        margin-left: 10px;
+    }
     .creationSuccessful {
         color: #008000;
         margin-bottom: 10px;
     }
     .creationFailed {
-		color: #ff0000;
-		margin-bottom: 10px;
-	}
+        color: #ff0000;
+        margin-bottom: 10px;
+    }
     .errorField {
         border: 1px solid #ff0000;
         box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 6px #ff8080;
     }
     .errorIcon {
-		border: 1px solid #ff0000;
-		border-left: 0px;
-		box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 6px #ff8080;
-	}
+        border: 1px solid #ff0000;
+        border-left: 0px;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1), 0 0 6px #ff8080;
+    }
     .errorInput {
         color: #ff0000;
     }
