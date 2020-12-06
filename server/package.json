@@ -1,23 +1,23 @@
 {
-  "name": "mp3player",
-  "version": "1.0.0",
-  "description": "Application for listening to music",
-  "main": "app.js",
-  "scripts": {
-    "watch": "nodemon ./app.js"
-  },
-  "author": "Marko Bosnjak",
-  "license": "ISC",
-  "devDependencies": {
-    "nodemon": "^2.0.6"
-  },
-  "dependencies": {
-    "async": "^3.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "file-system": "^2.2.2",
-    "mongoose": "^5.10.15",
-    "multer": "^1.4.2"
-  }
+	"name": "mp3player",
+	"version": "1.0.0",
+	"description": "Application for listening to music",
+	"main": "app.js",
+	"scripts": {
+		"watch": "nodemon ./app.js"
+	},
+	"author": "Marko Bošnjak",
+	"license": "ISC",
+	"devDependencies": {
+		"nodemon": "^2.0.6"
+	},
+	"dependencies": {
+		"async": "^3.2.0",
+		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"file-system": "^2.2.2",
+		"mongoose": "^5.10.15",
+		"multer": "^1.4.2"
+	}
 }
